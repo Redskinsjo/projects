@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Candidate {
+  id                   String   @id @default(uuid()) @db.Uuid
+  name                 String   @db.VarChar(255)
+  title                String   @db.VarChar(255)
+  role                 String   @db.VarChar(255)
+  match                String?  @db.VarChar(10)
+  cv                   String   @db.VarChar(50)
+  cvLink               String   @db.Text
+  conversation         String   @db.VarChar(50)
+  conversationKeywords String[]
+  keyword              String   @db.VarChar(255)
+  refs                 String   @db.VarChar(50)
+  referent             String   @db.VarChar(255)
+
+  // Personal information
+  personalEmail        String @db.VarChar(255)
+  personalPhone        String @db.VarChar(20)
+  personalLocation     String @db.VarChar(255)
+  personalExperience   String @db.VarChar(50)
+  personalAvailability String @db.VarChar(50)
+  personalSummary      String @db.Text
+
+  // History (JSON array)
+  history Json @default("[]")
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("candidates")
+}
