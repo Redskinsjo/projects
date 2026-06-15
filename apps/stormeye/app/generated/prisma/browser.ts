@@ -18,7 +18,62 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel
+/**
+ * Model PasswordCredential
+ * 
+ */
+export type PasswordCredential = Prisma.PasswordCredentialModel
+/**
+ * Model OAuthAccount
+ * 
+ */
+export type OAuthAccount = Prisma.OAuthAccountModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model Company
+ * 
+ */
+export type Company = Prisma.CompanyModel
+/**
+ * Model Recruiter
+ * 
+ */
+export type Recruiter = Prisma.RecruiterModel
+/**
+ * Model JobOffer
+ * 
+ */
+export type JobOffer = Prisma.JobOfferModel
+/**
  * Model Candidate
  * 
  */
 export type Candidate = Prisma.CandidateModel
+/**
+ * Model InvitationToken
+ * 
+ */
+export type InvitationToken = Prisma.InvitationTokenModel
+/**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
+/**
+ * Model Report
+ * 
+ */
+export type Report = Prisma.ReportModel

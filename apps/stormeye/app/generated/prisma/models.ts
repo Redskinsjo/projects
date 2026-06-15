@@ -8,5 +8,16 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/User'
+export type * from './models/PasswordCredential'
+export type * from './models/OAuthAccount'
+export type * from './models/Session'
+export type * from './models/Company'
+export type * from './models/Recruiter'
+export type * from './models/JobOffer'
 export type * from './models/Candidate'
+export type * from './models/InvitationToken'
+export type * from './models/Conversation'
+export type * from './models/Message'
+export type * from './models/Report'
 export type * from './commonInputTypes'

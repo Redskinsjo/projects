@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCandidateById } from "@/app/lib/server/candidateService";
+import { getCandidateById } from "@/app/lib/server/recruitmentService";
 
 export async function GET(
   request: Request,

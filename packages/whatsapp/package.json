@@ -1,0 +1,15 @@
+{
+  "name": "@repo/whatsapp",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "5.9.2"
+  }
+}

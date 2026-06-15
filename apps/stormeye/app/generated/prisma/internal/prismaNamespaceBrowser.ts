@@ -51,7 +51,18 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Candidate: 'Candidate'
+  User: 'User',
+  PasswordCredential: 'PasswordCredential',
+  OAuthAccount: 'OAuthAccount',
+  Session: 'Session',
+  Company: 'Company',
+  Recruiter: 'Recruiter',
+  JobOffer: 'JobOffer',
+  Candidate: 'Candidate',
+  InvitationToken: 'InvitationToken',
+  Conversation: 'Conversation',
+  Message: 'Message',
+  Report: 'Report'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -70,31 +81,164 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const CandidateScalarFieldEnum = {
+export const UserScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  avatarUrl: 'avatarUrl',
+  emailVerifiedAt: 'emailVerifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const PasswordCredentialScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  passwordHash: 'passwordHash',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PasswordCredentialScalarFieldEnum = (typeof PasswordCredentialScalarFieldEnum)[keyof typeof PasswordCredentialScalarFieldEnum]
+
+
+export const OAuthAccountScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  provider: 'provider',
+  providerAccountId: 'providerAccountId',
+  email: 'email',
+  displayName: 'displayName',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  avatarUrl: 'avatarUrl',
+  rawProfile: 'rawProfile',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OAuthAccountScalarFieldEnum = (typeof OAuthAccountScalarFieldEnum)[keyof typeof OAuthAccountScalarFieldEnum]
+
+
+export const SessionScalarFieldEnum = {
+  id: 'id',
+  tokenHash: 'tokenHash',
+  userId: 'userId',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const CompanyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CompanyScalarFieldEnum = (typeof CompanyScalarFieldEnum)[keyof typeof CompanyScalarFieldEnum]
+
+
+export const RecruiterScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RecruiterScalarFieldEnum = (typeof RecruiterScalarFieldEnum)[keyof typeof RecruiterScalarFieldEnum]
+
+
+export const JobOfferScalarFieldEnum = {
+  id: 'id',
   title: 'title',
-  role: 'role',
-  match: 'match',
-  cv: 'cv',
-  cvLink: 'cvLink',
-  conversation: 'conversation',
-  conversationKeywords: 'conversationKeywords',
-  keyword: 'keyword',
-  refs: 'refs',
-  referent: 'referent',
-  personalEmail: 'personalEmail',
-  personalPhone: 'personalPhone',
-  personalLocation: 'personalLocation',
-  personalExperience: 'personalExperience',
-  personalAvailability: 'personalAvailability',
-  personalSummary: 'personalSummary',
-  history: 'history',
+  description: 'description',
+  requiredSkills: 'requiredSkills',
+  companyId: 'companyId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type JobOfferScalarFieldEnum = (typeof JobOfferScalarFieldEnum)[keyof typeof JobOfferScalarFieldEnum]
+
+
+export const CandidateScalarFieldEnum = {
+  id: 'id',
+  firstName: 'firstName',
+  lastName: 'lastName',
+  email: 'email',
+  phoneNumber: 'phoneNumber',
+  resumeUrl: 'resumeUrl',
+  status: 'status',
+  score: 'score',
+  jobOfferId: 'jobOfferId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type CandidateScalarFieldEnum = (typeof CandidateScalarFieldEnum)[keyof typeof CandidateScalarFieldEnum]
+
+
+export const InvitationTokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  candidateId: 'candidateId',
+  channel: 'channel',
+  deliveryStatus: 'deliveryStatus',
+  deliveryMessage: 'deliveryMessage',
+  sentAt: 'sentAt',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type InvitationTokenScalarFieldEnum = (typeof InvitationTokenScalarFieldEnum)[keyof typeof InvitationTokenScalarFieldEnum]
+
+
+export const ConversationScalarFieldEnum = {
+  id: 'id',
+  candidateId: 'candidateId',
+  completedAt: 'completedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const MessageScalarFieldEnum = {
+  id: 'id',
+  role: 'role',
+  content: 'content',
+  conversationId: 'conversationId',
+  createdAt: 'createdAt'
+} as const
+
+export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const ReportScalarFieldEnum = {
+  id: 'id',
+  candidateId: 'candidateId',
+  summary: 'summary',
+  strengths: 'strengths',
+  weaknesses: 'weaknesses',
+  estimatedLevel: 'estimatedLevel',
+  score: 'score',
+  recommendation: 'recommendation',
+  createdAt: 'createdAt'
+} as const
+
+export type ReportScalarFieldEnum = (typeof ReportScalarFieldEnum)[keyof typeof ReportScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -103,6 +247,14 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const JsonNullValueInput = {
@@ -120,6 +272,14 @@ export const QueryMode = {
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
 export const JsonNullValueFilter = {
   DbNull: DbNull,
   JsonNull: JsonNull,
@@ -127,12 +287,4 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

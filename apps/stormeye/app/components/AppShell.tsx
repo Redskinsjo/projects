@@ -5,7 +5,8 @@ import TopNav from "./TopNav";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isApplicationPage = pathname !== "/" && pathname !== "/login";
+  const isApplicationPage =
+    pathname !== "/" && pathname !== "/login" && !pathname.startsWith("/interview/");
 
   return (
     <div className="flex min-h-screen">
@@ -54,7 +55,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="text-xs">Abonnements</span>
               </a>
               <a
-                href="/billing"
+                href="/connectors"
                 className="group flex w-full flex-col items-center gap-2 rounded-3xl px-3 py-4 text-center transition hover:bg-slate-900 hover:text-white"
               >
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-slate-300 group-hover:text-emerald-300">
