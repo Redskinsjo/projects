@@ -13,7 +13,6 @@
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
-    "@repo/agents": "workspace:*",
     "@repo/ai": "workspace:*",
     "@repo/scoring": "workspace:*",
     "@repo/whatsapp": "workspace:*",
