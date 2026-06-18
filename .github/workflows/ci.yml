@@ -31,6 +31,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: pnpm --filter packid prisma:generate
 
       - name: Lint
