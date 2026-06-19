@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import ChangePasswordForm from "../components/ChangePasswordForm";
+import UserAvatar from "../components/UserAvatar";
 import { getCurrentUser } from "../lib/server/authService";
 
 const providerLabels = {
@@ -14,11 +16,6 @@ function formatDate(date: Date | string | null | undefined) {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(date));
-}
-
-function initials(firstName?: string | null, lastName?: string | null, email?: string) {
-  const letters = [firstName?.[0], lastName?.[0]].filter(Boolean).join("");
-  return (letters || email?.slice(0, 2) || "SE").toUpperCase();
 }
 
 function maskIdentifier(value: string) {
@@ -50,9 +47,11 @@ export default async function ProfilePage() {
         <section className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30 sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
-              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-emerald-400 text-2xl font-semibold text-slate-950 shadow-lg shadow-emerald-400/20">
-                {initials(user.firstName, user.lastName, user.email)}
-              </div>
+              <UserAvatar
+                user={user}
+                className="h-20 w-20 rounded-3xl"
+                textClassName="text-2xl font-semibold"
+              />
               <div className="min-w-0">
                 <p className="text-sm font-semibold uppercase text-emerald-300">
                   Profil recruteur
@@ -241,6 +240,18 @@ export default async function ProfilePage() {
             ))}
           </div>
         </section>
+
+        {hasPassword ? (
+          <section className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6">
+            <h2 className="text-lg font-semibold text-white">
+              Modifier le mot de passe
+            </h2>
+            <p className="mt-2 text-sm text-slate-400">
+              Disponible pour la methode de connexion email et mot de passe.
+            </p>
+            <ChangePasswordForm />
+          </section>
+        ) : null}
       </div>
     </div>
   );

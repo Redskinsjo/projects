@@ -64,6 +64,7 @@ model User {
   avatarUrl           String?
   emailVerifiedAt     DateTime?
   passwordCredential  PasswordCredential?
+  passwordResetTokens PasswordResetToken[]
   oauthAccounts       OAuthAccount[]
   sessions            Session[]
   createdAt           DateTime             @default(now())
@@ -77,6 +78,18 @@ model PasswordCredential {
   passwordHash String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
 }
 
 model OAuthAccount {

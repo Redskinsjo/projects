@@ -1,15 +1,52 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import TopNav from "./TopNav";
+import UserAvatar from "./UserAvatar";
+
+type ShellUser = {
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  avatarUrl?: string | null;
+};
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [user, setUser] = useState<ShellUser | null>(null);
   const isApplicationPage =
     pathname !== "/" &&
     pathname !== "/login" &&
     pathname !== "/signup" &&
+    pathname !== "/forgot-password" &&
+    pathname !== "/reset-password" &&
     !pathname.startsWith("/interview/");
+
+  useEffect(() => {
+    if (!isApplicationPage) {
+      return;
+    }
+
+    let isMounted = true;
+
+    fetch("/api/auth/me", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((payload: { user?: ShellUser | null } | null) => {
+        if (isMounted) {
+          setUser(payload?.user ?? null);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setUser(null);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isApplicationPage, pathname]);
 
   return (
     <div className="flex min-h-screen">
@@ -24,18 +61,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 href="/profile"
                 className="group flex w-full flex-col items-center gap-2 rounded-3xl px-3 py-4 text-center transition hover:bg-slate-900 hover:text-white"
               >
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-slate-300 group-hover:text-emerald-300">
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    className="h-5 w-5"
-                  >
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" />
-                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-                  </svg>
-                </span>
+                <UserAvatar user={user} />
                 <span className="text-xs">Profil</span>
               </a>
               <a

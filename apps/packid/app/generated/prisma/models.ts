@@ -10,6 +10,7 @@
  */
 export type * from './models/User'
 export type * from './models/PasswordCredential'
+export type * from './models/PasswordResetToken'
 export type * from './models/OAuthAccount'
 export type * from './models/Session'
 export type * from './models/Company'

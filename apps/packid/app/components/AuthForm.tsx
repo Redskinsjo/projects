@@ -110,6 +110,17 @@ export default function AuthForm({
           ) : null}
         </div>
 
+        {!isSignup ? (
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-sm font-semibold text-emerald-300 hover:text-emerald-200"
+            >
+              Mot de passe oublie ?
+            </Link>
+          </div>
+        ) : null}
+
         <button
           type="submit"
           disabled={isSubmitting}

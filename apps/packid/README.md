@@ -20,6 +20,22 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Email
+
+Password reset emails are sent from an OVHcloud/Zimbra mailbox over SMTP when these environment variables are set:
+
+```bash
+SMTP_HOST="ssl0.ovh.net"
+SMTP_PORT="465"
+SMTP_SECURE="true"
+SMTP_USER="your-address@your-domain.com"
+SMTP_PASSWORD="your-ovh-mailbox-password"
+EMAIL_FROM="Packid <your-address@your-domain.com>"
+APP_BASE_URL="http://localhost:3000"
+```
+
+If `SMTP_USER` or `SMTP_PASSWORD` is missing, Packid simulates the email and prints the reset link in the server logs.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
