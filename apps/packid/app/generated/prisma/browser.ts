@@ -28,6 +28,11 @@ export type User = Prisma.UserModel
  */
 export type PasswordCredential = Prisma.PasswordCredentialModel
 /**
+ * Model PasswordResetToken
+ * 
+ */
+export type PasswordResetToken = Prisma.PasswordResetTokenModel
+/**
  * Model OAuthAccount
  * 
  */

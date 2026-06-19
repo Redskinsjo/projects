@@ -80,3 +80,19 @@ export const loginSchema = z.object({
   email: z.string().trim().email("Email invalide.").toLowerCase(),
   password: z.string().min(1, "Le mot de passe est requis."),
 });
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Le mot de passe actuel est requis."),
+  newPassword: z
+    .string()
+    .min(10, "Le nouveau mot de passe doit contenir au moins 10 caracteres."),
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().email("Email invalide.").toLowerCase(),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().trim().min(20, "Lien de reinitialisation invalide."),
+  password: z.string().min(10, "Le mot de passe doit contenir au moins 10 caracteres."),
+});

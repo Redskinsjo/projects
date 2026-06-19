@@ -1,11 +1,20 @@
 import Link from "next/link";
 import CandidateCard from "../components/CandidateCard";
+import { getCurrentUser } from "../lib/server/authService";
 import { getDashboardData } from "../lib/server/recruitmentService";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardPage() {
-  const { candidates, jobs, kpis } = await getDashboardData();
+  const [user, dashboardData] = await Promise.all([
+    getCurrentUser(),
+    getDashboardData(),
+  ]);
+  const { candidates, jobs, kpis } = dashboardData;
+  const userName =
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+    user?.email ||
+    "patron";
 
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-12 text-slate-100 sm:px-10">
@@ -17,11 +26,12 @@ export default async function DashboardPage() {
                 Packid MVP V2
               </p>
               <h1 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
-                Pilotage des entretiens IA
+                Bonjour {userName}
               </h1>
               <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
-                Suivez les candidats invites, les entretiens termines, les scores
-                et les recommandations generees.
+                Je prepare votre tableau de bord: candidats a suivre, entretiens
+                termines, scores et recommandations sont prets pour vos decisions.
+                Je reste a vos cotes pour prioriser la suite.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">

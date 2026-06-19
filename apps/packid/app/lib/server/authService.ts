@@ -2,9 +2,11 @@ import type { AuthProvider, Prisma } from "@/app/generated/prisma/client";
 import crypto from "node:crypto";
 import { cookies } from "next/headers";
 import { prisma } from "../prisma";
+import { sendPasswordResetEmail } from "./emailService";
 
 const SESSION_COOKIE = "packid_session";
 const SESSION_DURATION_DAYS = 30;
+const PASSWORD_RESET_DURATION_MINUTES = 60;
 const PASSWORD_ITERATIONS = 210000;
 const PASSWORD_KEY_LENGTH = 64;
 const PASSWORD_DIGEST = "sha512";
@@ -184,6 +186,98 @@ export async function loginWithPassword(input: {
   await createSession(user.id);
 
   return user;
+}
+
+export async function changePassword(input: {
+  userId: string;
+  currentPassword: string;
+  newPassword: string;
+}) {
+  const credential = await prisma.passwordCredential.findUnique({
+    where: { userId: input.userId },
+  });
+
+  if (!credential) {
+    throw new Error("La connexion par mot de passe n'est pas configuree.");
+  }
+
+  if (!verifyPassword(input.currentPassword, credential.passwordHash)) {
+    throw new Error("Mot de passe actuel incorrect.");
+  }
+
+  await prisma.passwordCredential.update({
+    where: { userId: input.userId },
+    data: { passwordHash: hashPassword(input.newPassword) },
+  });
+}
+
+function getResetBaseUrl(requestUrl: string) {
+  return process.env.APP_BASE_URL || new URL(requestUrl).origin;
+}
+
+export async function requestPasswordReset(input: {
+  email: string;
+  requestUrl: string;
+}) {
+  const user = await prisma.user.findUnique({
+    where: { email: input.email },
+    include: { passwordCredential: true },
+  });
+
+  if (!user?.passwordCredential) {
+    return { sent: false, simulated: false };
+  }
+
+  const token = crypto.randomBytes(32).toString("base64url");
+  const expiresAt = new Date(
+    Date.now() + PASSWORD_RESET_DURATION_MINUTES * 60 * 1000,
+  );
+
+  await prisma.passwordResetToken.create({
+    data: {
+      userId: user.id,
+      tokenHash: hashToken(token),
+      expiresAt,
+    },
+  });
+
+  const resetUrl = `${getResetBaseUrl(input.requestUrl)}/reset-password?token=${token}`;
+
+  return sendPasswordResetEmail({
+    to: user.email,
+    resetUrl,
+  });
+}
+
+export async function resetPasswordWithToken(input: {
+  token: string;
+  password: string;
+}) {
+  const resetToken = await prisma.passwordResetToken.findUnique({
+    where: { tokenHash: hashToken(input.token) },
+    include: { user: { include: { passwordCredential: true } } },
+  });
+
+  if (
+    !resetToken ||
+    resetToken.usedAt ||
+    resetToken.expiresAt < new Date() ||
+    !resetToken.user.passwordCredential
+  ) {
+    throw new Error("Lien de reinitialisation invalide ou expire.");
+  }
+
+  await prisma.$transaction([
+    prisma.passwordCredential.update({
+      where: { userId: resetToken.userId },
+      data: { passwordHash: hashPassword(input.password) },
+    }),
+    prisma.passwordResetToken.update({
+      where: { id: resetToken.id },
+      data: { usedAt: new Date() },
+    }),
+    prisma.session.deleteMany({ where: { userId: resetToken.userId } }),
+  ]);
 }
 
 export async function upsertOAuthUser(profile: OAuthProfile) {
