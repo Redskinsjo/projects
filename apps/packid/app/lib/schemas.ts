@@ -17,7 +17,8 @@ export const createJobOfferSchema = z.object({
   title: z.string().trim().min(2, "Le titre de l'offre est requis."),
   description: z.string().trim().min(20, "La description est trop courte."),
   requiredSkills: z.string().trim().min(2, "Ajoutez au moins une competence."),
-  companyId: z.string().trim().min(1, "L'entreprise est requise."),
+  companyId: z.string().trim().optional().or(z.literal("")),
+  companyName: z.string().trim().min(2, "Le nom de l'entreprise est requis."),
 });
 
 export const createCandidateSchema = z.object({

@@ -10,93 +10,41 @@ type CompanyOption = {
 
 type ImportedJobData = {
   companyId?: string;
+  companyName?: string;
   title?: string;
   description?: string;
   requiredSkills?: string;
 };
 
-function readLabeledLine(text: string, labels: string[]) {
-  const escapedLabels = labels.map((label) =>
-    label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
-  );
-  const pattern = new RegExp(
-    `^\\s*(?:${escapedLabels.join("|")})\\s*[:\\-]\\s*(.+)$`,
-    "im",
-  );
-  return text.match(pattern)?.[1]?.trim();
-}
-
-function readDescriptionBlock(text: string) {
-  const match = text.match(
-    /^\s*(?:description|missions?|contexte|profil)\s*[:\-]\s*([\s\S]+?)(?=^\s*(?:titre|poste|intitule|intitulé|entreprise|societe|société|competences|compétences|skills|prerequis|prérequis)\s*[:\-]|\s*$)/im,
-  );
-  return match?.[1]?.trim();
-}
-
-function findCompanyId(companyName: string | undefined, companies: CompanyOption[]) {
-  if (!companyName) return undefined;
-  const normalized = companyName.trim().toLocaleLowerCase("fr-FR");
-  return companies.find(
-    (company) => company.name.trim().toLocaleLowerCase("fr-FR") === normalized,
-  )?.id;
-}
-
-function parseImportedJob(text: string, companies: CompanyOption[]): ImportedJobData {
-  const title = readLabeledLine(text, ["titre", "poste", "intitule", "intitulé"]);
-  const companyName = readLabeledLine(text, [
-    "entreprise",
-    "societe",
-    "société",
-    "company",
-  ]);
-  const requiredSkills = readLabeledLine(text, [
-    "competences",
-    "compétences",
-    "skills",
-    "prerequis",
-    "prérequis",
-  ]);
-  const description = readDescriptionBlock(text) ?? text.trim();
-
-  return {
-    companyId: findCompanyId(companyName, companies),
-    title,
-    description,
-    requiredSkills,
-  };
-}
-
 export default function CreateJobForm({ companies }: { companies: CompanyOption[] }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [importMessage, setImportMessage] = useState("");
-  const [companyId, setCompanyId] = useState(companies[0]?.id ?? "");
+  const [isImporting, setIsImporting] = useState(false);
+  const [clipboardText, setClipboardText] = useState("");
+  const [companyName, setCompanyName] = useState(companies[0]?.name ?? "");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [requiredSkills, setRequiredSkills] = useState("");
+  const findCompanyByName = (name: string) =>
+    companies.find(
+      (company) =>
+        company.name.trim().toLocaleLowerCase("fr-FR") ===
+        name.trim().toLocaleLowerCase("fr-FR"),
+    );
 
-  const importJobFile = async (file: File | undefined) => {
-    setError("");
-    setImportMessage("");
-
-    if (!file) return;
-
-    const text = await file.text();
-    const cleanedText = text.replace(/\u0000/g, "").trim();
-
-    if (cleanedText.length < 20) {
-      setError(
-        "Le fichier ne contient pas assez de texte lisible. Utilisez un fichier texte ou copiez le contenu dans la description.",
-      );
-      return;
-    }
-
-    const imported = parseImportedJob(cleanedText, companies);
+  const applyImportedJob = (imported: ImportedJobData) => {
     const applied: string[] = [];
 
-    if (imported.companyId) {
-      setCompanyId(imported.companyId);
+    if (imported.companyName) {
+      setCompanyName(imported.companyName);
       applied.push("entreprise");
+    } else if (imported.companyId) {
+      const company = companies.find((option) => option.id === imported.companyId);
+      if (company) {
+        setCompanyName(company.name);
+        applied.push("entreprise");
+      }
     }
 
     if (imported.title) {
@@ -116,14 +64,63 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
 
     setImportMessage(
       applied.length > 0
-        ? `Fichier importe. Champs pre-remplis : ${applied.join(", ")}.`
-        : "Fichier importe dans la description.",
+        ? `Donnees importees : ${applied.join(", ")}.`
+        : "Aucune information reconnue automatiquement.",
     );
+  };
+
+  const importJobData = async (input: { file?: File; text?: string }) => {
+    setError("");
+    setImportMessage("");
+
+    if (!input.file && !input.text?.trim()) return;
+
+    setIsImporting(true);
+
+    const formData = new FormData();
+    if (input.file) formData.append("file", input.file);
+    if (input.text) formData.append("text", input.text);
+
+    const response = await fetch("/api/jobs/import", {
+      method: "POST",
+      body: formData,
+    });
+    const body = (await response.json().catch(() => null)) as {
+      imported?: ImportedJobData;
+      error?: string;
+    } | null;
+
+    setIsImporting(false);
+
+    if (!response.ok || !body?.imported) {
+      setError(body?.error ?? "Lecture du fichier impossible.");
+      return;
+    }
+
+    applyImportedJob(body.imported);
+  };
+
+  const importClipboard = async () => {
+    if (clipboardText.trim()) {
+      await importJobData({ text: clipboardText });
+      return;
+    }
+
+    if (!navigator.clipboard?.readText) {
+      setError("Lecture du presse-papier indisponible dans ce navigateur.");
+      return;
+    }
+
+    const text = await navigator.clipboard.readText();
+    setClipboardText(text);
+    await importJobData({ text });
   };
 
   const submit = async (formData: FormData) => {
     setError("");
-    formData.set("companyId", companyId);
+    const matchedCompany = findCompanyByName(companyName);
+    formData.set("companyId", matchedCompany?.id ?? "");
+    formData.set("companyName", companyName);
     formData.set("title", title);
     formData.set("description", description);
     formData.set("requiredSkills", requiredSkills);
@@ -154,14 +151,40 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
         </label>
         <input
           type="file"
-          accept=".txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json"
-          onChange={(event) => importJobFile(event.target.files?.[0])}
+          accept=".pdf,.doc,.docx,.rtf,.txt,.md,.csv,.json,.html,.htm,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf,text/plain,text/markdown,text/csv,text/html,application/json"
+          disabled={isImporting}
+          onChange={(event) => importJobData({ file: event.target.files?.[0] })}
           className="mt-4 block w-full text-sm text-slate-400 file:mr-4 file:rounded-3xl file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-cyan-300 hover:file:bg-slate-700"
         />
+
+        <label className="mt-5 block text-sm font-semibold text-slate-300">
+          Coller une offre en clé-valeur
+        </label>
+        <textarea
+          value={clipboardText}
+          onChange={(event) => setClipboardText(event.target.value)}
+          rows={5}
+          placeholder={"entreprise: NovaStudio Digital\ntitre=Designer UI/UX Senior\ncompetences,Figma, UI/UX, HTML, CSS\ndescription: ..."}
+          className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+        />
+        <button
+          type="button"
+          disabled={isImporting}
+          onClick={importClipboard}
+          className="mt-3 rounded-3xl border border-slate-700 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {clipboardText.trim()
+            ? "Remplir depuis le texte"
+            : "Lire le presse-papier"}
+        </button>
         <p className="mt-3 text-xs leading-5 text-slate-500">
-          Le fichier peut pre-remplir la description. Les lignes Titre:, Entreprise:
-          et Competences: sont aussi reconnues si elles existent.
+          Formats acceptes : PDF, DOCX, RTF et fichiers texte. Les lignes
+          clé:valeur, clé=valeur, clé,valeur, tabulations et points-virgules
+          sont aussi reconnues.
         </p>
+        {isImporting ? (
+          <p className="mt-3 text-sm text-cyan-300">Analyse du fichier...</p>
+        ) : null}
         {importMessage ? (
           <p className="mt-3 text-sm text-emerald-300">{importMessage}</p>
         ) : null}
@@ -172,18 +195,20 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
           <label className="block text-sm font-semibold text-slate-300">
             Entreprise
           </label>
-          <select
-            name="companyId"
-            value={companyId}
-            onChange={(event) => setCompanyId(event.target.value)}
+          <input
+            name="companyName"
+            type="text"
+            list="job-company-options"
+            value={companyName}
+            onChange={(event) => setCompanyName(event.target.value)}
+            placeholder="NovaStudio Digital"
             className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-          >
+          />
+          <datalist id="job-company-options">
             {companies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
+              <option key={company.id} value={company.name} />
             ))}
-          </select>
+          </datalist>
         </div>
         <div>
           <label className="block text-sm font-semibold text-slate-300">

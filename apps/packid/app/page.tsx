@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
@@ -191,7 +193,7 @@ export default function Home() {
           id="contact"
           className="rounded-3xl border border-slate-800 bg-slate-900/80 p-8 text-slate-300 shadow-lg shadow-slate-950/10"
         >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.24em] text-emerald-300">
                 Agent IA recrutement
@@ -200,8 +202,28 @@ export default function Home() {
                 Conçu pour les équipes RH, les cabinets et les entreprises
                 exigeantes.
               </p>
+              <nav className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                <Link
+                  href="/privacy-policy"
+                  className="font-medium text-slate-200 transition hover:text-emerald-300"
+                >
+                  Politique de confidentialité
+                </Link>
+                <Link
+                  href="/terms-of-service"
+                  className="font-medium text-slate-200 transition hover:text-emerald-300"
+                >
+                  Conditions de service
+                </Link>
+                <Link
+                  href="/user-data-deletion"
+                  className="font-medium text-slate-200 transition hover:text-emerald-300"
+                >
+                  Suppression de données utilisateur
+                </Link>
+              </nav>
             </div>
-            <div className="space-y-2 text-sm">
+            <div className="space-y-2 text-sm sm:text-right">
               <p>
                 Email: <span className="text-white">contact@recrutopia.ai</span>
               </p>

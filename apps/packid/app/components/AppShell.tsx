@@ -21,6 +21,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     pathname !== "/signup" &&
     pathname !== "/forgot-password" &&
     pathname !== "/reset-password" &&
+    pathname !== "/privacy-policy" &&
+    pathname !== "/terms-of-service" &&
+    pathname !== "/user-data-deletion" &&
     !pathname.startsWith("/interview/");
 
   useEffect(() => {
