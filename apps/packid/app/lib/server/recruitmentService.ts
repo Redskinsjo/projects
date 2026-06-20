@@ -12,7 +12,9 @@ import type {
   InvitationDeliveryStatus,
 } from "@/app/generated/prisma/client";
 import crypto from "node:crypto";
+import { composeInternationalPhoneNumber } from "../phone";
 import { prisma } from "../prisma";
+import { requireCurrentOrganization } from "./authService";
 
 function splitSkills(value: string) {
   return value
@@ -35,6 +37,15 @@ type CandidateContact = {
   lastName: string;
   email?: string | null;
   phoneNumber?: string | null;
+  jobOffer?: {
+    title: string;
+    company: {
+      name: string;
+      organization?: {
+        name: string;
+      } | null;
+    };
+  } | null;
 };
 
 function candidateName(candidate: CandidateContact) {
@@ -62,6 +73,10 @@ async function sendInvitationMessage(input: {
   const message = buildInterviewInvitationMessage({
     phoneNumber: input.candidate.phoneNumber,
     candidateName: candidateName(input.candidate),
+    jobOfferTitle: input.candidate.jobOffer?.title,
+    recruiterCompanyName:
+      input.candidate.jobOffer?.company.organization?.name ??
+      input.candidate.jobOffer?.company.name,
     interviewUrl: input.interviewUrl,
   });
 
@@ -70,6 +85,10 @@ async function sendInvitationMessage(input: {
       const result = await sendInterviewInvitation({
         phoneNumber: input.candidate.phoneNumber,
         candidateName: candidateName(input.candidate),
+        jobOfferTitle: input.candidate.jobOffer?.title,
+        recruiterCompanyName:
+          input.candidate.jobOffer?.company.organization?.name ??
+          input.candidate.jobOffer?.company.name,
         interviewUrl: input.interviewUrl,
       });
 
@@ -82,6 +101,11 @@ async function sendInvitationMessage(input: {
         error instanceof Error
           ? error.message
           : "Envoi WhatsApp impossible.";
+
+      console.error("WhatsApp invitation failed", {
+        phoneNumber: input.candidate.phoneNumber,
+        error: errorMessage,
+      });
 
       return {
         message: errorMessage,
@@ -117,14 +141,42 @@ async function sendInvitationMessage(input: {
   };
 }
 
-export async function getDashboardData() {
+type CandidateArchiveFilter = "active" | "archived" | "all";
+
+function archiveWhere(filter: CandidateArchiveFilter = "active") {
+  if (filter === "archived") {
+    return { archivedAt: { not: null } };
+  }
+
+  if (filter === "all") {
+    return {};
+  }
+
+  return { archivedAt: null };
+}
+
+export async function getDashboardData({
+  includeArchived = false,
+}: { includeArchived?: boolean } = {}) {
+  const organization = await requireCurrentOrganization();
+  const candidateWhere = archiveWhere(includeArchived ? "all" : "active");
+  const organizationWhere = { organizationId: organization.id };
+
   const [companies, jobs, candidates, reports] = await Promise.all([
-    prisma.company.findMany({ orderBy: { createdAt: "desc" } }),
+    prisma.company.findMany({
+      where: organizationWhere,
+      orderBy: { createdAt: "desc" },
+    }),
     prisma.jobOffer.findMany({
-      include: { company: true, _count: { select: { candidates: true } } },
+      where: { company: organizationWhere },
+      include: {
+        company: true,
+        _count: { select: { candidates: { where: candidateWhere } } },
+      },
       orderBy: { createdAt: "desc" },
     }),
     prisma.candidate.findMany({
+      where: { ...candidateWhere, jobOffer: { company: organizationWhere } },
       include: {
         jobOffer: { include: { company: true } },
         reports: { orderBy: { createdAt: "desc" }, take: 1 },
@@ -132,7 +184,14 @@ export async function getDashboardData() {
       },
       orderBy: [{ score: "desc" }, { createdAt: "desc" }],
     }),
-    prisma.report.findMany(),
+    prisma.report.findMany({
+      where: {
+        candidate: {
+          ...candidateWhere,
+          jobOffer: { company: organizationWhere },
+        },
+      },
+    }),
   ]);
 
   const completed = candidates.filter((candidate) =>
@@ -166,18 +225,37 @@ export async function getDashboardData() {
 }
 
 export async function getCompanies() {
-  return prisma.company.findMany({ orderBy: { createdAt: "desc" } });
-}
+  const organization = await requireCurrentOrganization();
 
-export async function getJobOffers() {
-  return prisma.jobOffer.findMany({
-    include: { company: true, _count: { select: { candidates: true } } },
+  return prisma.company.findMany({
+    where: { organizationId: organization.id },
     orderBy: { createdAt: "desc" },
   });
 }
 
-export async function getCandidates() {
+export async function getJobOffers() {
+  const organization = await requireCurrentOrganization();
+
+  return prisma.jobOffer.findMany({
+    where: { company: { organizationId: organization.id } },
+    include: {
+      company: true,
+      _count: { select: { candidates: { where: archiveWhere("active") } } },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getCandidates({
+  archiveFilter = "active",
+}: { archiveFilter?: CandidateArchiveFilter } = {}) {
+  const organization = await requireCurrentOrganization();
+
   return prisma.candidate.findMany({
+    where: {
+      ...archiveWhere(archiveFilter),
+      jobOffer: { company: { organizationId: organization.id } },
+    },
     include: {
       jobOffer: { include: { company: true } },
       reports: { orderBy: { createdAt: "desc" }, take: 1 },
@@ -188,8 +266,10 @@ export async function getCandidates() {
 }
 
 export async function getCandidateById(id: string) {
-  return prisma.candidate.findUnique({
-    where: { id },
+  const organization = await requireCurrentOrganization();
+
+  return prisma.candidate.findFirst({
+    where: { id, jobOffer: { company: { organizationId: organization.id } } },
     include: {
       jobOffer: { include: { company: true } },
       conversations: {
@@ -210,25 +290,68 @@ export async function updateCandidate(
     lastName?: string;
     email?: string;
     phoneNumber?: string;
+    phoneCountryCode?: string;
     resumeUrl?: string;
+    archived?: boolean;
   },
 ) {
+  const organization = await requireCurrentOrganization();
+  const candidate = await prisma.candidate.findFirst({
+    where: { id, jobOffer: { company: { organizationId: organization.id } } },
+    select: { id: true },
+  });
+
+  if (!candidate) {
+    throw new Error("Candidat introuvable.");
+  }
+
   return prisma.candidate.update({
-    where: { id },
+    where: { id: candidate.id },
     data: {
       ...(input.firstName !== undefined ? { firstName: input.firstName } : {}),
       ...(input.lastName !== undefined ? { lastName: input.lastName } : {}),
       ...(input.email !== undefined ? { email: input.email || null } : {}),
       ...(input.phoneNumber !== undefined
-        ? { phoneNumber: input.phoneNumber || null }
+        ? {
+            phoneNumber:
+              composeInternationalPhoneNumber(
+                input.phoneNumber,
+                input.phoneCountryCode,
+              ) || null,
+          }
         : {}),
       ...(input.resumeUrl !== undefined ? { resumeUrl: input.resumeUrl || null } : {}),
+      ...(input.archived !== undefined
+        ? { archivedAt: input.archived ? new Date() : null }
+        : {}),
     },
   });
 }
 
+export async function deleteArchivedCandidate(id: string) {
+  const organization = await requireCurrentOrganization();
+  const candidate = await prisma.candidate.findFirst({
+    where: { id, jobOffer: { company: { organizationId: organization.id } } },
+    select: { archivedAt: true },
+  });
+
+  if (!candidate) {
+    throw new Error("Candidat introuvable.");
+  }
+
+  if (!candidate.archivedAt) {
+    throw new Error("Archivez le candidat avant de le supprimer.");
+  }
+
+  return prisma.candidate.delete({ where: { id } });
+}
+
 export async function createCompany(input: { name: string }) {
-  return prisma.company.create({ data: input });
+  const organization = await requireCurrentOrganization();
+
+  return prisma.company.create({
+    data: { ...input, organizationId: organization.id },
+  });
 }
 
 export async function createRecruiter(input: {
@@ -237,6 +360,15 @@ export async function createRecruiter(input: {
   lastName: string;
   companyId: string;
 }) {
+  const organization = await requireCurrentOrganization();
+  const company = await prisma.company.findFirst({
+    where: { id: input.companyId, organizationId: organization.id },
+  });
+
+  if (!company) {
+    throw new Error("Entreprise introuvable.");
+  }
+
   return prisma.recruiter.create({ data: input });
 }
 
@@ -247,16 +379,22 @@ export async function createJobOffer(input: {
   companyId?: string;
   companyName: string;
 }) {
+  const organization = await requireCurrentOrganization();
   const companyName = input.companyName.trim();
   const existingCompany = input.companyId
-    ? await prisma.company.findUnique({ where: { id: input.companyId } })
+    ? await prisma.company.findFirst({
+        where: { id: input.companyId, organizationId: organization.id },
+      })
     : await prisma.company.findFirst({
-        where: { name: { equals: companyName, mode: "insensitive" } },
+        where: {
+          organizationId: organization.id,
+          name: { equals: companyName, mode: "insensitive" },
+        },
       });
   const company =
     existingCompany ??
     (await prisma.company.create({
-      data: { name: companyName },
+      data: { name: companyName, organizationId: organization.id },
     }));
 
   return prisma.jobOffer.create({
@@ -275,6 +413,7 @@ export async function createCandidate(
     lastName: string;
     email?: string;
     phoneNumber?: string;
+    phoneCountryCode?: string;
     resumeUrl?: string;
     jobOfferId: string;
     invitationMode?: "create" | "createAndNotify";
@@ -282,12 +421,28 @@ export async function createCandidate(
   },
   origin: string,
 ) {
+  const organization = await requireCurrentOrganization();
+  const jobOffer = await prisma.jobOffer.findFirst({
+    where: {
+      id: input.jobOfferId,
+      company: { organizationId: organization.id },
+    },
+  });
+
+  if (!jobOffer) {
+    throw new Error("Offre introuvable.");
+  }
+
   const candidate = await prisma.candidate.create({
     data: {
       firstName: input.firstName,
       lastName: input.lastName,
       email: input.email || null,
-      phoneNumber: input.phoneNumber || null,
+      phoneNumber:
+        composeInternationalPhoneNumber(
+          input.phoneNumber,
+          input.phoneCountryCode,
+        ) || null,
       resumeUrl: input.resumeUrl || null,
       jobOfferId: input.jobOfferId,
     },
@@ -314,10 +469,14 @@ export async function createCandidate(
 }
 
 export async function inviteCandidate(input: InvitationInput, origin: string) {
-  const candidate = await prisma.candidate.findUnique({
-    where: { id: input.candidateId },
+  const organization = await requireCurrentOrganization();
+  const candidate = await prisma.candidate.findFirst({
+    where: {
+      id: input.candidateId,
+      jobOffer: { company: { organizationId: organization.id } },
+    },
     include: {
-      jobOffer: true,
+      jobOffer: { include: { company: { include: { organization: true } } } },
       invitationTokens: { orderBy: { createdAt: "desc" }, take: 1 },
     },
   });
@@ -377,7 +536,11 @@ export async function startInterview(token: string) {
     where: { token },
     include: {
       candidate: {
-        include: { jobOffer: true },
+        include: {
+          jobOffer: {
+            include: { company: { include: { organization: true } } },
+          },
+        },
       },
     },
   });
@@ -520,8 +683,12 @@ export async function completeConversation(conversationId: string) {
 }
 
 export async function generateCandidateReport(candidateId: string) {
-  const candidate = await prisma.candidate.findUnique({
-    where: { id: candidateId },
+  const organization = await requireCurrentOrganization();
+  const candidate = await prisma.candidate.findFirst({
+    where: {
+      id: candidateId,
+      jobOffer: { company: { organizationId: organization.id } },
+    },
     include: {
       jobOffer: true,
       conversations: {
@@ -584,4 +751,18 @@ export async function generateCandidateReport(candidateId: string) {
   });
 
   return report;
+}
+
+export async function getReportById(id: string) {
+  const organization = await requireCurrentOrganization();
+
+  return prisma.report.findFirst({
+    where: {
+      id,
+      candidate: {
+        jobOffer: { company: { organizationId: organization.id } },
+      },
+    },
+    include: { candidate: { include: { jobOffer: true } } },
+  });
 }

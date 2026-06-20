@@ -43,6 +43,16 @@ export type OAuthAccount = Prisma.OAuthAccountModel
  */
 export type Session = Prisma.SessionModel
 /**
+ * Model Organization
+ * 
+ */
+export type Organization = Prisma.OrganizationModel
+/**
+ * Model OrganizationMember
+ * 
+ */
+export type OrganizationMember = Prisma.OrganizationMemberModel
+/**
  * Model Company
  * 
  */

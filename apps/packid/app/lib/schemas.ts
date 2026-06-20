@@ -6,6 +6,10 @@ export const createCompanySchema = z.object({
   name: z.string().trim().min(2, "Le nom de l'entreprise est requis."),
 });
 
+export const createOrganizationSchema = z.object({
+  name: z.string().trim().min(2, "Le nom de l'organisation est requis."),
+});
+
 export const createRecruiterSchema = z.object({
   email: z.string().trim().email("Email recruteur invalide."),
   firstName: z.string().trim().min(1, "Le prenom est requis."),
@@ -26,6 +30,7 @@ export const createCandidateSchema = z.object({
   lastName: z.string().trim().min(1, "Le nom est requis."),
   email: z.string().trim().email().optional().or(z.literal("")),
   phoneNumber: z.string().trim().optional().or(z.literal("")),
+  phoneCountryCode: z.string().trim().optional().or(z.literal("")),
   resumeUrl: z.string().trim().url().optional().or(z.literal("")),
   jobOfferId: z.string().trim().min(1, "L'offre est requise."),
   invitationMode: z.enum(["create", "createAndNotify"]).default("create"),
@@ -46,7 +51,9 @@ export const updateCandidateSchema = z.object({
   lastName: z.string().trim().min(1, "Le nom est requis.").optional(),
   email: z.string().trim().email("Email invalide.").optional().or(z.literal("")),
   phoneNumber: z.string().trim().optional().or(z.literal("")),
+  phoneCountryCode: z.string().trim().optional().or(z.literal("")),
   resumeUrl: z.string().trim().url("Lien CV invalide.").optional().or(z.literal("")),
+  archived: z.boolean().optional(),
 });
 
 export const inviteCandidateSchema = z.object({

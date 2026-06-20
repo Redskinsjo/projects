@@ -248,5 +248,5 @@ export async function completeOAuthFlow(
     parseAppleUser(params.user),
   );
 
-  await upsertOAuthUser(profile);
+  return upsertOAuthUser(profile);
 }

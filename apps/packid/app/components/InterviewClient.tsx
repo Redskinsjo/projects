@@ -14,6 +14,11 @@ type StartResponse = {
     lastName: string;
     jobOffer: {
       title: string;
+      company?: {
+        organization?: {
+          name: string;
+        } | null;
+      } | null;
     };
   };
   conversation: {
@@ -116,7 +121,8 @@ export default function InterviewClient({ token }: { token: string }) {
     <div className="rounded-[2rem] bg-slate-900/90 p-8 ring-1 ring-white/10">
       <div className="border-b border-slate-800 pb-6">
         <p className="text-sm uppercase tracking-[0.3em] text-cyan-300">
-          Entretien IA Packid
+          {data.candidate.jobOffer.company?.organization?.name ??
+            "Entretien IA Packid"}
         </p>
         <h1 className="mt-4 text-3xl font-semibold text-white">
           {data.candidate.jobOffer.title}

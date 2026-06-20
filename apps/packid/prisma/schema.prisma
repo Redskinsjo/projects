@@ -66,6 +66,7 @@ model User {
   passwordCredential  PasswordCredential?
   passwordResetTokens PasswordResetToken[]
   oauthAccounts       OAuthAccount[]
+  organizationMembers OrganizationMember[]
   sessions            Session[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -119,13 +120,40 @@ model Session {
   createdAt DateTime @default(now())
 }
 
+model Organization {
+  id        String               @id @default(cuid())
+  name      String
+  members   OrganizationMember[]
+  companies Company[]
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           String       @default("OWNER")
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+}
+
 model Company {
-  id         String      @id @default(cuid())
-  name       String
-  recruiters Recruiter[]
-  jobs       JobOffer[]
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id             String       @id @default(cuid())
+  name           String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  recruiters     Recruiter[]
+  jobs           JobOffer[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([organizationId])
 }
 
 model Recruiter {
@@ -165,6 +193,7 @@ model Candidate {
   conversations    Conversation[]
   reports          Report[]
   invitationTokens InvitationToken[]
+  archivedAt       DateTime?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
 }

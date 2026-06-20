@@ -2,6 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import {
+  composeInternationalPhoneNumber,
+  COUNTRY_DIAL_CODES,
+  DEFAULT_COUNTRY_DIAL_CODE,
+  splitInternationalPhoneNumber,
+} from "../lib/phone";
 
 type JobOption = {
   id: string;
@@ -20,6 +26,13 @@ type ImportedCandidateData = {
   jobOfferId?: string;
 };
 
+type DeliveryStatus = "PENDING" | "SENT" | "FAILED" | "SIMULATED";
+
+type DeliveryNotice = {
+  status: DeliveryStatus;
+  message?: string | null;
+} | null;
+
 export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -27,10 +40,14 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
   const [isImporting, setIsImporting] = useState(false);
   const [clipboardText, setClipboardText] = useState("");
   const [interviewUrl, setInterviewUrl] = useState("");
+  const [deliveryNotice, setDeliveryNotice] = useState<DeliveryNotice>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState(
+    DEFAULT_COUNTRY_DIAL_CODE,
+  );
   const [resumeUrl, setResumeUrl] = useState("");
   const [jobOfferId, setJobOfferId] = useState(jobs[0]?.id ?? "");
   const [invitationMode, setInvitationMode] = useState<"create" | "createAndNotify">(
@@ -57,7 +74,11 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
     }
 
     if (imported.phoneNumber) {
-      setPhoneNumber(imported.phoneNumber);
+      const parsedPhoneNumber = splitInternationalPhoneNumber(
+        imported.phoneNumber,
+      );
+      setPhoneCountryCode(parsedPhoneNumber.countryDialCode);
+      setPhoneNumber(parsedPhoneNumber.nationalNumber);
       applied.push("telephone");
     }
 
@@ -125,10 +146,15 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
   const submit = async (formData: FormData) => {
     setError("");
     setInterviewUrl("");
+    setDeliveryNotice(null);
     formData.set("firstName", firstName);
     formData.set("lastName", lastName);
     formData.set("email", email);
-    formData.set("phoneNumber", phoneNumber);
+    formData.set(
+      "phoneNumber",
+      composeInternationalPhoneNumber(phoneNumber, phoneCountryCode),
+    );
+    formData.set("phoneCountryCode", phoneCountryCode);
     formData.set("resumeUrl", resumeUrl);
     formData.set("jobOfferId", jobOfferId);
     formData.set("invitationMode", invitationMode);
@@ -148,6 +174,10 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
       error?: string;
       interviewUrl?: string;
       candidate?: { id: string };
+      invitation?: {
+        deliveryStatus?: DeliveryStatus;
+        deliveryMessage?: string | null;
+      } | null;
     } | null;
 
     if (!response.ok) {
@@ -156,6 +186,14 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
     }
 
     setInterviewUrl(body?.interviewUrl ?? "");
+    setDeliveryNotice(
+      body?.invitation?.deliveryStatus
+        ? {
+            status: body.invitation.deliveryStatus,
+            message: body.invitation.deliveryMessage,
+          }
+        : null,
+    );
     router.refresh();
   };
 
@@ -251,13 +289,31 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
           <label className="block text-sm font-semibold text-slate-300">
             Telephone WhatsApp
           </label>
-          <input
-            name="phoneNumber"
-            type="tel"
-            value={phoneNumber}
-            onChange={(event) => setPhoneNumber(event.target.value)}
-            className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-          />
+          <div className="mt-2 flex gap-2">
+            <select
+              name="phoneCountryCode"
+              value={phoneCountryCode}
+              onChange={(event) => setPhoneCountryCode(event.target.value)}
+              className="w-20 shrink-0 rounded-3xl border border-slate-800 bg-slate-950/95 px-2 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 sm:w-24"
+            >
+              {COUNTRY_DIAL_CODES.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.code}
+                </option>
+              ))}
+            </select>
+            <input
+              name="phoneNumber"
+              type="tel"
+              value={phoneNumber}
+              onChange={(event) => setPhoneNumber(event.target.value)}
+              placeholder="6 12 34 56 78"
+              className="min-w-0 flex-1 rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            />
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            Le numero sera enregistre avec l&apos;indicatif pour WhatsApp.
+          </p>
         </div>
       </div>
       <label className="mt-6 block text-sm font-semibold text-slate-300">
@@ -357,6 +413,24 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
       {interviewUrl ? (
         <div className="mt-6 rounded-3xl bg-emerald-500/10 p-4 text-sm text-emerald-100 ring-1 ring-emerald-300/20">
           Invitation preparee : {interviewUrl}
+        </div>
+      ) : null}
+      {deliveryNotice ? (
+        <div
+          className={`mt-4 rounded-3xl p-4 text-sm ring-1 ${
+            deliveryNotice.status === "FAILED"
+              ? "bg-red-500/10 text-red-100 ring-red-300/20"
+              : deliveryNotice.status === "SIMULATED"
+                ? "bg-amber-500/10 text-amber-100 ring-amber-300/20"
+                : "bg-emerald-500/10 text-emerald-100 ring-emerald-300/20"
+          }`}
+        >
+          Statut WhatsApp : {deliveryNotice.status}
+          {deliveryNotice.message ? (
+            <span className="mt-2 block break-words">
+              {deliveryNotice.message}
+            </span>
+          ) : null}
         </div>
       ) : null}
     </form>

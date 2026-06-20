@@ -114,6 +114,10 @@ export async function getCurrentUser() {
       user: {
         include: {
           oauthAccounts: { orderBy: { createdAt: "asc" } },
+          organizationMembers: {
+            orderBy: { createdAt: "asc" },
+            include: { organization: true },
+          },
           passwordCredential: {
             select: {
               id: true,
@@ -140,6 +144,74 @@ export async function getCurrentUser() {
   }
 
   return session.user;
+}
+
+export async function getCurrentOrganization() {
+  const user = await getCurrentUser();
+
+  return user?.organizationMembers[0]?.organization ?? null;
+}
+
+export async function isOrganizationNameAvailable(name: string) {
+  const normalizedName = name.trim();
+
+  if (!normalizedName) {
+    return false;
+  }
+
+  const existingOrganization = await prisma.organization.findFirst({
+    where: {
+      name: {
+        equals: normalizedName,
+        mode: "insensitive",
+      },
+    },
+    select: { id: true },
+  });
+
+  return !existingOrganization;
+}
+
+export async function requireCurrentOrganization() {
+  const organization = await getCurrentOrganization();
+
+  if (!organization) {
+    throw new Error("Organisation requise.");
+  }
+
+  return organization;
+}
+
+export async function createOrganizationForCurrentUser(input: { name: string }) {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new Error("Connexion requise.");
+  }
+
+  const existingMembership = user.organizationMembers[0];
+
+  if (existingMembership) {
+    return existingMembership.organization;
+  }
+
+  const isAvailable = await isOrganizationNameAvailable(input.name);
+
+  if (!isAvailable) {
+    throw new Error("Ce nom d'organisation est deja utilise.");
+  }
+
+  return prisma.organization.create({
+    data: {
+      name: input.name.trim(),
+      members: {
+        create: {
+          userId: user.id,
+          role: "OWNER",
+        },
+      },
+    },
+  });
 }
 
 export async function signUpWithPassword(input: {
@@ -172,7 +244,13 @@ export async function loginWithPassword(input: {
 }) {
   const user = await prisma.user.findUnique({
     where: { email: input.email },
-    include: { passwordCredential: true },
+    include: {
+      passwordCredential: true,
+      organizationMembers: {
+        orderBy: { createdAt: "asc" },
+        include: { organization: true },
+      },
+    },
   });
 
   if (!user?.passwordCredential) {
@@ -297,7 +375,16 @@ export async function upsertOAuthUser(profile: OAuthProfile) {
         providerAccountId: profile.providerAccountId,
       },
     },
-    include: { user: true },
+    include: {
+      user: {
+        include: {
+          organizationMembers: {
+            orderBy: { createdAt: "asc" },
+            include: { organization: true },
+          },
+        },
+      },
+    },
   });
 
   if (existingAccount) {
@@ -320,7 +407,10 @@ export async function upsertOAuthUser(profile: OAuthProfile) {
     });
 
     await createSession(existingAccount.userId);
-    return updatedUser;
+    return {
+      ...updatedUser,
+      organizationMembers: existingAccount.user.organizationMembers,
+    };
   }
 
   const existingUser = profile.email
@@ -368,7 +458,17 @@ export async function upsertOAuthUser(profile: OAuthProfile) {
 
   await createSession(userWithProviderData.id);
 
-  return userWithProviderData;
+  const userWithOrganization = await prisma.user.findUniqueOrThrow({
+    where: { id: userWithProviderData.id },
+    include: {
+      organizationMembers: {
+        orderBy: { createdAt: "asc" },
+        include: { organization: true },
+      },
+    },
+  });
+
+  return userWithOrganization;
 }
 
 export function getSessionCookieName() {

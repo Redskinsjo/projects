@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { updateCandidateSchema } from "@/app/lib/schemas";
-import { getCandidateById, updateCandidate } from "@/app/lib/server/recruitmentService";
+import {
+  deleteArchivedCandidate,
+  getCandidateById,
+  updateCandidate,
+} from "@/app/lib/server/recruitmentService";
 
 export async function GET(
   request: Request,
@@ -36,6 +40,29 @@ export async function PATCH(
     return NextResponse.json(
       { error: "Impossible de mettre a jour le candidat." },
       { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id } = await params;
+
+  try {
+    await deleteArchivedCandidate(id);
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Impossible de supprimer le candidat.",
+      },
+      { status: 400 },
     );
   }
 }

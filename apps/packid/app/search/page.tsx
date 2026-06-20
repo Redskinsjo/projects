@@ -6,10 +6,22 @@ export const dynamic = "force-dynamic";
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; minScore?: string; jobId?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    minScore?: string;
+    jobId?: string;
+    archived?: string;
+  }>;
 }) {
   const params = await searchParams;
-  const [allCandidates, jobs] = await Promise.all([getCandidates(), getJobOffers()]);
+  const archiveFilter =
+    params.archived === "archived" || params.archived === "all"
+      ? params.archived
+      : "active";
+  const [allCandidates, jobs] = await Promise.all([
+    getCandidates({ archiveFilter }),
+    getJobOffers(),
+  ]);
   const minScore = Number(params.minScore ?? 0);
   const candidates = allCandidates.filter((candidate) => {
     const statusMatch = params.status ? candidate.status === params.status : true;
@@ -34,7 +46,7 @@ export default async function SearchPage({
           </h1>
         </header>
 
-        <form className="grid gap-4 rounded-3xl bg-slate-900/80 p-6 ring-1 ring-slate-700/50 md:grid-cols-4">
+        <form className="grid gap-4 rounded-3xl bg-slate-900/80 p-6 ring-1 ring-slate-700/50 md:grid-cols-5">
           <select
             name="status"
             defaultValue={params.status ?? ""}
@@ -75,6 +87,15 @@ export default async function SearchPage({
                 {job.title}
               </option>
             ))}
+          </select>
+          <select
+            name="archived"
+            defaultValue={archiveFilter}
+            className="rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100"
+          >
+            <option value="active">Non archives</option>
+            <option value="archived">Archives</option>
+            <option value="all">Tous</option>
           </select>
           <button className="rounded-3xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950">
             Filtrer

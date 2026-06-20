@@ -3,9 +3,9 @@ import AuthForm from "../components/AuthForm";
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; next?: string }>;
 }) {
-  const { error } = await searchParams;
+  const { error, next } = await searchParams;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12 text-slate-100 sm:px-10">
@@ -24,7 +24,7 @@ export default async function LoginPage({
             </p>
           </div>
         </div>
-        <AuthForm mode="login" initialError={error} />
+        <AuthForm mode="login" initialError={error} redirectTo={next} />
       </div>
     </div>
   );
