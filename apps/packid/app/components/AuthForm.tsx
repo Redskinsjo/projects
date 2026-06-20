@@ -15,9 +15,11 @@ const socialProviders = [
 export default function AuthForm({
   mode,
   initialError = "",
+  redirectTo = "/dashboard",
 }: {
   mode: AuthMode;
   initialError?: string;
+  redirectTo?: string;
 }) {
   const router = useRouter();
   const [error, setError] = useState(initialError);
@@ -36,6 +38,9 @@ export default function AuthForm({
     });
     const body = (await response.json().catch(() => null)) as {
       error?: string;
+      user?: {
+        hasOrganization?: boolean;
+      };
     } | null;
 
     setIsSubmitting(false);
@@ -45,7 +50,11 @@ export default function AuthForm({
       return;
     }
 
-    router.push("/dashboard");
+    const safeRedirectTo = redirectTo.startsWith("/") ? redirectTo : "/dashboard";
+    const destination =
+      body?.user?.hasOrganization === false ? "/organization/new" : safeRedirectTo;
+
+    router.push(destination);
     router.refresh();
   };
 

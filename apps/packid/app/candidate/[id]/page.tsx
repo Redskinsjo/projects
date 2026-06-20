@@ -1,5 +1,7 @@
 import Link from "next/link";
+import ArchiveCandidateButton from "@/app/components/ArchiveCandidateButton";
 import CandidateEditableFields from "@/app/components/CandidateEditableFields";
+import DeleteCandidateButton from "@/app/components/DeleteCandidateButton";
 import GenerateReportButton from "@/app/components/GenerateReportButton";
 import InviteCandidateForm from "@/app/components/InviteCandidateForm";
 import { getCandidateById, getInterviewUrl } from "@/app/lib/server/recruitmentService";
@@ -59,6 +61,8 @@ export default async function CandidateProfilePage({
   const origin = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   const interviewUrl = latestToken ? getInterviewUrl(origin, latestToken.token) : "";
   const skills = asStringList(candidate.jobOffer.requiredSkills);
+  const isArchived = Boolean(candidate.archivedAt);
+  const candidateName = `${candidate.firstName} ${candidate.lastName}`;
 
   return (
     <div className="min-h-screen bg-slate-950 px-6 py-12 text-slate-100 sm:px-10">
@@ -70,7 +74,7 @@ export default async function CandidateProfilePage({
                 Dossier candidat
               </p>
               <h1 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
-                {candidate.firstName} {candidate.lastName}
+                {candidateName}
               </h1>
               <p className="mt-3 text-lg text-slate-300">
                 {candidate.jobOffer.title} · {candidate.jobOffer.company.name}
@@ -80,12 +84,30 @@ export default async function CandidateProfilePage({
               <span className="rounded-full bg-slate-800 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-300">
                 {candidate.status}
               </span>
+              {isArchived ? (
+                <span className="rounded-full bg-amber-500/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-amber-300">
+                  Archive
+                </span>
+              ) : null}
               {typeof candidate.score === "number" ? (
                 <span className="rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-300">
                   {candidate.score}/100
                 </span>
               ) : null}
             </div>
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3 border-t border-slate-800 pt-6">
+            <ArchiveCandidateButton
+              candidateId={candidate.id}
+              isArchived={isArchived}
+            />
+            {isArchived ? (
+              <DeleteCandidateButton
+                candidateId={candidate.id}
+                candidateName={candidateName}
+                redirectTo="/search?archived=archived"
+              />
+            ) : null}
           </div>
         </header>
 

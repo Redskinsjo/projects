@@ -5,10 +5,16 @@ import { getDashboardData } from "../lib/server/recruitmentService";
 
 export const dynamic = "force-dynamic";
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ includeArchived?: string }>;
+}) {
+  const params = await searchParams;
+  const includeArchived = params.includeArchived === "true";
   const [user, dashboardData] = await Promise.all([
     getCurrentUser(),
-    getDashboardData(),
+    getDashboardData({ includeArchived }),
   ]);
   const { candidates, jobs, kpis } = dashboardData;
   const userName =
@@ -33,8 +39,20 @@ export default async function DashboardPage() {
                 termines, scores et recommandations sont prets pour vos decisions.
                 Je reste a vos cotes pour prioriser la suite.
               </p>
+              <p className="mt-3 text-sm text-slate-500">
+                Vue actuelle :{" "}
+                {includeArchived
+                  ? "tous les candidats, archives inclus"
+                  : "candidats non archives uniquement"}
+              </p>
             </div>
             <div className="flex flex-wrap gap-3">
+              <Link
+                href={includeArchived ? "/dashboard" : "/dashboard?includeArchived=true"}
+                className="rounded-3xl border border-amber-400/30 px-5 py-3 text-sm font-semibold text-amber-200 transition hover:border-amber-300 hover:text-amber-100"
+              >
+                {includeArchived ? "Masquer archives" : "Inclure archives"}
+              </Link>
               <Link
                 href="/companies/new"
                 className="rounded-3xl border border-slate-700 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:border-cyan-400 hover:text-cyan-200"
@@ -85,6 +103,9 @@ export default async function DashboardPage() {
                 </h2>
                 <p className="mt-2 text-sm text-slate-400">
                   Tri automatique par score puis date de creation.
+                  {includeArchived
+                    ? " Les candidats archives sont inclus dans cette vue."
+                    : " Les candidats archives sont exclus par defaut."}
                 </p>
               </div>
               <Link

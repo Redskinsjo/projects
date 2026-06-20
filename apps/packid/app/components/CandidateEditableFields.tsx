@@ -2,6 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import {
+  composeInternationalPhoneNumber,
+  COUNTRY_DIAL_CODES,
+  splitInternationalPhoneNumber,
+} from "../lib/phone";
 
 type CandidateEditableFieldsProps = {
   candidate: {
@@ -21,13 +26,17 @@ export default function CandidateEditableFields({
 }: CandidateEditableFieldsProps) {
   const router = useRouter();
   const didMount = useRef(false);
+  const initialPhoneNumber = splitInternationalPhoneNumber(
+    candidate.phoneNumber,
+  );
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [error, setError] = useState("");
   const [fields, setFields] = useState({
     firstName: candidate.firstName,
     lastName: candidate.lastName,
     email: candidate.email ?? "",
-    phoneNumber: candidate.phoneNumber ?? "",
+    phoneCountryCode: initialPhoneNumber.countryDialCode,
+    phoneNumber: initialPhoneNumber.nationalNumber,
     resumeUrl: candidate.resumeUrl ?? "",
   });
 
@@ -44,7 +53,13 @@ export default function CandidateEditableFields({
       const response = await fetch(`/api/candidate/${candidate.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fields),
+        body: JSON.stringify({
+          ...fields,
+          phoneNumber: composeInternationalPhoneNumber(
+            fields.phoneNumber,
+            fields.phoneCountryCode,
+          ),
+        }),
       });
 
       const body = (await response.json().catch(() => null)) as {
@@ -127,13 +142,31 @@ export default function CandidateEditableFields({
           <label className="block text-sm font-semibold text-slate-300">
             WhatsApp
           </label>
-          <input
-            type="tel"
-            value={fields.phoneNumber}
-            onChange={(event) => updateField("phoneNumber", event.target.value)}
-            placeholder="+33..."
-            className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
-          />
+          <div className="mt-2 flex gap-2">
+            <select
+              value={fields.phoneCountryCode}
+              onChange={(event) =>
+                updateField("phoneCountryCode", event.target.value)
+              }
+              className="w-20 shrink-0 rounded-3xl border border-slate-800 bg-slate-950/95 px-2 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 sm:w-24"
+            >
+              {COUNTRY_DIAL_CODES.map((country) => (
+                <option key={country.code} value={country.code}>
+                  {country.code}
+                </option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              value={fields.phoneNumber}
+              onChange={(event) => updateField("phoneNumber", event.target.value)}
+              placeholder="6 12 34 56 78"
+              className="min-w-0 flex-1 rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            />
+          </div>
+          <p className="mt-2 text-xs text-slate-500">
+            Le numero est enregistre avec l&apos;indicatif pour WhatsApp.
+          </p>
         </div>
       </div>
 

@@ -9,6 +9,13 @@ const channelLabels = {
   EMAIL: "Email",
 };
 
+type DeliveryStatus = "PENDING" | "SENT" | "FAILED" | "SIMULATED";
+
+type DeliveryNotice = {
+  status: DeliveryStatus;
+  message?: string | null;
+} | null;
+
 export default function InviteCandidateForm({
   candidateId,
   hasEmail,
@@ -22,6 +29,7 @@ export default function InviteCandidateForm({
   const [communicationChannel, setCommunicationChannel] = useState("WHATSAPP");
   const [error, setError] = useState("");
   const [interviewUrl, setInterviewUrl] = useState("");
+  const [deliveryNotice, setDeliveryNotice] = useState<DeliveryNotice>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const unavailable =
@@ -32,6 +40,7 @@ export default function InviteCandidateForm({
   const submit = async (formData: FormData) => {
     setError("");
     setInterviewUrl("");
+    setDeliveryNotice(null);
     setIsSubmitting(true);
 
     const response = await fetch(`/api/candidate/${candidateId}/invite`, {
@@ -44,6 +53,10 @@ export default function InviteCandidateForm({
     const body = (await response.json().catch(() => null)) as {
       error?: string;
       interviewUrl?: string;
+      invitation?: {
+        deliveryStatus?: DeliveryStatus;
+        deliveryMessage?: string | null;
+      } | null;
     } | null;
 
     setIsSubmitting(false);
@@ -54,6 +67,14 @@ export default function InviteCandidateForm({
     }
 
     setInterviewUrl(body?.interviewUrl ?? "");
+    setDeliveryNotice(
+      body?.invitation?.deliveryStatus
+        ? {
+            status: body.invitation.deliveryStatus,
+            message: body.invitation.deliveryMessage,
+          }
+        : null,
+    );
     router.refresh();
   };
 
@@ -90,6 +111,25 @@ export default function InviteCandidateForm({
         <p className="mt-3 break-all text-sm text-emerald-200">
           Invitation preparee : {interviewUrl}
         </p>
+      ) : null}
+      {deliveryNotice ? (
+        <div
+          className={`mt-4 rounded-3xl p-4 text-sm ring-1 ${
+            deliveryNotice.status === "FAILED"
+              ? "bg-red-500/10 text-red-100 ring-red-300/20"
+              : deliveryNotice.status === "SIMULATED"
+                ? "bg-amber-500/10 text-amber-100 ring-amber-300/20"
+                : "bg-emerald-500/10 text-emerald-100 ring-emerald-300/20"
+          }`}
+        >
+          Statut {channelLabels[communicationChannel as keyof typeof channelLabels]} :{" "}
+          {deliveryNotice.status}
+          {deliveryNotice.message ? (
+            <span className="mt-2 block break-words">
+              {deliveryNotice.message}
+            </span>
+          ) : null}
+        </div>
       ) : null}
     </form>
   );

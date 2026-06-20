@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
+import { isApplicationPagePath } from "../lib/routes";
 import TopNav from "./TopNav";
 import UserAvatar from "./UserAvatar";
 
@@ -15,16 +16,7 @@ type ShellUser = {
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [user, setUser] = useState<ShellUser | null>(null);
-  const isApplicationPage =
-    pathname !== "/" &&
-    pathname !== "/login" &&
-    pathname !== "/signup" &&
-    pathname !== "/forgot-password" &&
-    pathname !== "/reset-password" &&
-    pathname !== "/privacy-policy" &&
-    pathname !== "/terms-of-service" &&
-    pathname !== "/user-data-deletion" &&
-    !pathname.startsWith("/interview/");
+  const isApplicationPage = isApplicationPagePath(pathname);
 
   useEffect(() => {
     if (!isApplicationPage) {

@@ -44,6 +44,7 @@ export type CandidateMinAggregateOutputType = {
   status: $Enums.CandidateStatus | null
   score: number | null
   jobOfferId: string | null
+  archivedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -58,6 +59,7 @@ export type CandidateMaxAggregateOutputType = {
   status: $Enums.CandidateStatus | null
   score: number | null
   jobOfferId: string | null
+  archivedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -72,6 +74,7 @@ export type CandidateCountAggregateOutputType = {
   status: number
   score: number
   jobOfferId: number
+  archivedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -96,6 +99,7 @@ export type CandidateMinAggregateInputType = {
   status?: true
   score?: true
   jobOfferId?: true
+  archivedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -110,6 +114,7 @@ export type CandidateMaxAggregateInputType = {
   status?: true
   score?: true
   jobOfferId?: true
+  archivedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +129,7 @@ export type CandidateCountAggregateInputType = {
   status?: true
   score?: true
   jobOfferId?: true
+  archivedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -225,6 +231,7 @@ export type CandidateGroupByOutputType = {
   status: $Enums.CandidateStatus
   score: number | null
   jobOfferId: string
+  archivedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: CandidateCountAggregateOutputType | null
@@ -262,6 +269,7 @@ export type CandidateWhereInput = {
   status?: Prisma.EnumCandidateStatusFilter<"Candidate"> | $Enums.CandidateStatus
   score?: Prisma.FloatNullableFilter<"Candidate"> | number | null
   jobOfferId?: Prisma.StringFilter<"Candidate"> | string
+  archivedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
   jobOffer?: Prisma.XOR<Prisma.JobOfferScalarRelationFilter, Prisma.JobOfferWhereInput>
@@ -280,6 +288,7 @@ export type CandidateOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   score?: Prisma.SortOrderInput | Prisma.SortOrder
   jobOfferId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   jobOffer?: Prisma.JobOfferOrderByWithRelationInput
@@ -301,6 +310,7 @@ export type CandidateWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumCandidateStatusFilter<"Candidate"> | $Enums.CandidateStatus
   score?: Prisma.FloatNullableFilter<"Candidate"> | number | null
   jobOfferId?: Prisma.StringFilter<"Candidate"> | string
+  archivedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
   jobOffer?: Prisma.XOR<Prisma.JobOfferScalarRelationFilter, Prisma.JobOfferWhereInput>
@@ -319,6 +329,7 @@ export type CandidateOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   score?: Prisma.SortOrderInput | Prisma.SortOrder
   jobOfferId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.CandidateCountOrderByAggregateInput
@@ -341,6 +352,7 @@ export type CandidateScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumCandidateStatusWithAggregatesFilter<"Candidate"> | $Enums.CandidateStatus
   score?: Prisma.FloatNullableWithAggregatesFilter<"Candidate"> | number | null
   jobOfferId?: Prisma.StringWithAggregatesFilter<"Candidate"> | string
+  archivedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Candidate"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Candidate"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Candidate"> | Date | string
 }
@@ -354,6 +366,7 @@ export type CandidateCreateInput = {
   resumeUrl?: string | null
   status?: $Enums.CandidateStatus
   score?: number | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobOffer: Prisma.JobOfferCreateNestedOneWithoutCandidatesInput
@@ -372,6 +385,7 @@ export type CandidateUncheckedCreateInput = {
   status?: $Enums.CandidateStatus
   score?: number | null
   jobOfferId: string
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCandidateInput
@@ -388,6 +402,7 @@ export type CandidateUpdateInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobOffer?: Prisma.JobOfferUpdateOneRequiredWithoutCandidatesNestedInput
@@ -406,6 +421,7 @@ export type CandidateUncheckedUpdateInput = {
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   jobOfferId?: Prisma.StringFieldUpdateOperationsInput | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCandidateNestedInput
@@ -423,6 +439,7 @@ export type CandidateCreateManyInput = {
   status?: $Enums.CandidateStatus
   score?: number | null
   jobOfferId: string
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -436,6 +453,7 @@ export type CandidateUpdateManyMutationInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -450,6 +468,7 @@ export type CandidateUncheckedUpdateManyInput = {
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   jobOfferId?: Prisma.StringFieldUpdateOperationsInput | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -474,6 +493,7 @@ export type CandidateCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   score?: Prisma.SortOrder
   jobOfferId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -492,6 +512,7 @@ export type CandidateMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   score?: Prisma.SortOrder
   jobOfferId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -506,6 +527,7 @@ export type CandidateMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   score?: Prisma.SortOrder
   jobOfferId?: Prisma.SortOrder
+  archivedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -624,6 +646,7 @@ export type CandidateCreateWithoutJobOfferInput = {
   resumeUrl?: string | null
   status?: $Enums.CandidateStatus
   score?: number | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ConversationCreateNestedManyWithoutCandidateInput
@@ -640,6 +663,7 @@ export type CandidateUncheckedCreateWithoutJobOfferInput = {
   resumeUrl?: string | null
   status?: $Enums.CandidateStatus
   score?: number | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCandidateInput
@@ -686,6 +710,7 @@ export type CandidateScalarWhereInput = {
   status?: Prisma.EnumCandidateStatusFilter<"Candidate"> | $Enums.CandidateStatus
   score?: Prisma.FloatNullableFilter<"Candidate"> | number | null
   jobOfferId?: Prisma.StringFilter<"Candidate"> | string
+  archivedAt?: Prisma.DateTimeNullableFilter<"Candidate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Candidate"> | Date | string
 }
@@ -699,6 +724,7 @@ export type CandidateCreateWithoutInvitationTokensInput = {
   resumeUrl?: string | null
   status?: $Enums.CandidateStatus
   score?: number | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobOffer: Prisma.JobOfferCreateNestedOneWithoutCandidatesInput
@@ -716,6 +742,7 @@ export type CandidateUncheckedCreateWithoutInvitationTokensInput = {
   status?: $Enums.CandidateStatus
   score?: number | null
   jobOfferId: string
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCandidateInput
@@ -747,6 +774,7 @@ export type CandidateUpdateWithoutInvitationTokensInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobOffer?: Prisma.JobOfferUpdateOneRequiredWithoutCandidatesNestedInput
@@ -764,6 +792,7 @@ export type CandidateUncheckedUpdateWithoutInvitationTokensInput = {
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   jobOfferId?: Prisma.StringFieldUpdateOperationsInput | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCandidateNestedInput
@@ -779,6 +808,7 @@ export type CandidateCreateWithoutConversationsInput = {
   resumeUrl?: string | null
   status?: $Enums.CandidateStatus
   score?: number | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobOffer: Prisma.JobOfferCreateNestedOneWithoutCandidatesInput
@@ -796,6 +826,7 @@ export type CandidateUncheckedCreateWithoutConversationsInput = {
   status?: $Enums.CandidateStatus
   score?: number | null
   jobOfferId: string
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   reports?: Prisma.ReportUncheckedCreateNestedManyWithoutCandidateInput
@@ -827,6 +858,7 @@ export type CandidateUpdateWithoutConversationsInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobOffer?: Prisma.JobOfferUpdateOneRequiredWithoutCandidatesNestedInput
@@ -844,6 +876,7 @@ export type CandidateUncheckedUpdateWithoutConversationsInput = {
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   jobOfferId?: Prisma.StringFieldUpdateOperationsInput | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reports?: Prisma.ReportUncheckedUpdateManyWithoutCandidateNestedInput
@@ -859,6 +892,7 @@ export type CandidateCreateWithoutReportsInput = {
   resumeUrl?: string | null
   status?: $Enums.CandidateStatus
   score?: number | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   jobOffer: Prisma.JobOfferCreateNestedOneWithoutCandidatesInput
@@ -876,6 +910,7 @@ export type CandidateUncheckedCreateWithoutReportsInput = {
   status?: $Enums.CandidateStatus
   score?: number | null
   jobOfferId: string
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   conversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutCandidateInput
@@ -907,6 +942,7 @@ export type CandidateUpdateWithoutReportsInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   jobOffer?: Prisma.JobOfferUpdateOneRequiredWithoutCandidatesNestedInput
@@ -924,6 +960,7 @@ export type CandidateUncheckedUpdateWithoutReportsInput = {
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   jobOfferId?: Prisma.StringFieldUpdateOperationsInput | string
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCandidateNestedInput
@@ -939,6 +976,7 @@ export type CandidateCreateManyJobOfferInput = {
   resumeUrl?: string | null
   status?: $Enums.CandidateStatus
   score?: number | null
+  archivedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -952,6 +990,7 @@ export type CandidateUpdateWithoutJobOfferInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ConversationUpdateManyWithoutCandidateNestedInput
@@ -968,6 +1007,7 @@ export type CandidateUncheckedUpdateWithoutJobOfferInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   conversations?: Prisma.ConversationUncheckedUpdateManyWithoutCandidateNestedInput
@@ -984,6 +1024,7 @@ export type CandidateUncheckedUpdateManyWithoutJobOfferInput = {
   resumeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumCandidateStatusFieldUpdateOperationsInput | $Enums.CandidateStatus
   score?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  archivedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1047,6 +1088,7 @@ export type CandidateSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   status?: boolean
   score?: boolean
   jobOfferId?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   jobOffer?: boolean | Prisma.JobOfferDefaultArgs<ExtArgs>
@@ -1066,6 +1108,7 @@ export type CandidateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   status?: boolean
   score?: boolean
   jobOfferId?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   jobOffer?: boolean | Prisma.JobOfferDefaultArgs<ExtArgs>
@@ -1081,6 +1124,7 @@ export type CandidateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ext
   status?: boolean
   score?: boolean
   jobOfferId?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   jobOffer?: boolean | Prisma.JobOfferDefaultArgs<ExtArgs>
@@ -1096,11 +1140,12 @@ export type CandidateSelectScalar = {
   status?: boolean
   score?: boolean
   jobOfferId?: boolean
+  archivedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phoneNumber" | "resumeUrl" | "status" | "score" | "jobOfferId" | "createdAt" | "updatedAt", ExtArgs["result"]["candidate"]>
+export type CandidateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "firstName" | "lastName" | "email" | "phoneNumber" | "resumeUrl" | "status" | "score" | "jobOfferId" | "archivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["candidate"]>
 export type CandidateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   jobOffer?: boolean | Prisma.JobOfferDefaultArgs<ExtArgs>
   conversations?: boolean | Prisma.Candidate$conversationsArgs<ExtArgs>
@@ -1133,6 +1178,7 @@ export type $CandidatePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     status: $Enums.CandidateStatus
     score: number | null
     jobOfferId: string
+    archivedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["candidate"]>
@@ -1571,6 +1617,7 @@ export interface CandidateFieldRefs {
   readonly status: Prisma.FieldRef<"Candidate", 'CandidateStatus'>
   readonly score: Prisma.FieldRef<"Candidate", 'Float'>
   readonly jobOfferId: Prisma.FieldRef<"Candidate", 'String'>
+  readonly archivedAt: Prisma.FieldRef<"Candidate", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Candidate", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Candidate", 'DateTime'>
 }

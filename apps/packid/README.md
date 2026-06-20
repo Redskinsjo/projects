@@ -50,11 +50,18 @@ WHATSAPP_WEBHOOK_VERIFY_TOKEN="choose-a-long-random-token"
 Optional template mode:
 
 ```bash
+WHATSAPP_TEMPLATE_ENABLED="true"
 WHATSAPP_TEMPLATE_NAME="packid_interview_invitation"
 WHATSAPP_TEMPLATE_LANGUAGE="fr"
 ```
 
-If `WHATSAPP_TEMPLATE_NAME` is missing, Packid sends a text message. In production, Meta may require an approved WhatsApp template to start a new conversation with a candidate.
+If `WHATSAPP_TEMPLATE_NAME` is missing or `WHATSAPP_TEMPLATE_ENABLED="false"`, Packid sends a text message. In production, Meta may require an approved WhatsApp template to start a new conversation with a candidate.
+
+Next.js loads `.env.local` and `.env`. A variable missing from `.env.local` does not remove the value from `.env`; it only overrides it when the same key is present. To disable templates locally while keeping them in `.env`, add this to `apps/packid/.env.local`:
+
+```bash
+WHATSAPP_TEMPLATE_ENABLED="false"
+```
 
 Webhook callback URL:
 

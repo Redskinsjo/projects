@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ArchiveCandidateButton from "./ArchiveCandidateButton";
+import DeleteCandidateButton from "./DeleteCandidateButton";
 
 type CandidateCardData = {
   id: string;
@@ -6,6 +8,7 @@ type CandidateCardData = {
   lastName: string;
   status: string;
   score: number | null;
+  archivedAt?: Date | string | null;
   jobOffer: {
     title: string;
     company: {
@@ -33,6 +36,7 @@ export default function CandidateCard({
   candidate: CandidateCardData;
 }) {
   const latestReport = candidate.reports?.[0];
+  const isArchived = Boolean(candidate.archivedAt);
 
   return (
     <div className="rounded-3xl border border-slate-800 bg-slate-950/95 p-5 shadow-lg shadow-slate-950/10">
@@ -52,6 +56,11 @@ export default function CandidateCard({
           <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
             {statusLabels[candidate.status] ?? candidate.status}
           </span>
+          {isArchived ? (
+            <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-300">
+              Archive
+            </span>
+          ) : null}
           {typeof candidate.score === "number" ? (
             <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
               {candidate.score}/100
@@ -75,12 +84,24 @@ export default function CandidateCard({
           <p className="mt-2 text-sm text-slate-200">Entretien Packid</p>
         </div>
       </div>
-      <Link
-        href={`/candidate/${candidate.id}`}
-        className="mt-6 inline-flex items-center rounded-3xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
-      >
-        Ouvrir le dossier
-      </Link>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link
+          href={`/candidate/${candidate.id}`}
+          className="inline-flex items-center rounded-3xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+        >
+          Ouvrir le dossier
+        </Link>
+        <ArchiveCandidateButton
+          candidateId={candidate.id}
+          isArchived={isArchived}
+        />
+        {isArchived ? (
+          <DeleteCandidateButton
+            candidateId={candidate.id}
+            candidateName={`${candidate.firstName} ${candidate.lastName}`}
+          />
+        ) : null}
+      </div>
     </div>
   );
 }

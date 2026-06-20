@@ -23,6 +23,7 @@ export async function POST(request: Request) {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          hasOrganization: false,
         },
       },
       { status: 201 },
