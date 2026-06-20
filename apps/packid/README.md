@@ -36,6 +36,34 @@ APP_BASE_URL="http://localhost:3000"
 
 If `SMTP_USER` or `SMTP_PASSWORD` is missing, Packid simulates the email and prints the reset link in the server logs.
 
+## WhatsApp
+
+Candidate invitations use the official WhatsApp Cloud API when these variables are set:
+
+```bash
+WHATSAPP_ACCESS_TOKEN="EA..."
+WHATSAPP_PHONE_NUMBER_ID="123456789"
+WHATSAPP_API_VERSION="v23.0"
+WHATSAPP_WEBHOOK_VERIFY_TOKEN="choose-a-long-random-token"
+```
+
+Optional template mode:
+
+```bash
+WHATSAPP_TEMPLATE_NAME="packid_interview_invitation"
+WHATSAPP_TEMPLATE_LANGUAGE="fr"
+```
+
+If `WHATSAPP_TEMPLATE_NAME` is missing, Packid sends a text message. In production, Meta may require an approved WhatsApp template to start a new conversation with a candidate.
+
+Webhook callback URL:
+
+```text
+https://your-domain.com/api/whatsapp/webhook
+```
+
+Use the same value for Meta's verify token and `WHATSAPP_WEBHOOK_VERIFY_TOKEN`.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

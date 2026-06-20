@@ -17,13 +17,7 @@ export default async function NewJobPage() {
             Creer une offre
           </h1>
         </header>
-        {companies.length > 0 ? (
-          <CreateJobForm companies={companies} />
-        ) : (
-          <p className="rounded-3xl bg-slate-900/80 p-8 text-sm text-slate-300 ring-1 ring-slate-700/50">
-            Creez une entreprise avant de publier une offre.
-          </p>
-        )}
+        <CreateJobForm companies={companies} />
       </div>
     </div>
   );

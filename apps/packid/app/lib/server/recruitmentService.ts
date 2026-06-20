@@ -66,16 +66,28 @@ async function sendInvitationMessage(input: {
   });
 
   if (input.channel === "WHATSAPP") {
-    const result = await sendInterviewInvitation({
-      phoneNumber: input.candidate.phoneNumber,
-      candidateName: candidateName(input.candidate),
-      interviewUrl: input.interviewUrl,
-    });
+    try {
+      const result = await sendInterviewInvitation({
+        phoneNumber: input.candidate.phoneNumber,
+        candidateName: candidateName(input.candidate),
+        interviewUrl: input.interviewUrl,
+      });
 
-    return {
-      message: result.message,
-      status: result.sent ? "SENT" : "SIMULATED",
-    };
+      return {
+        message: result.message,
+        status: result.sent ? "SENT" : "SIMULATED",
+      };
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Envoi WhatsApp impossible.";
+
+      return {
+        message: errorMessage,
+        status: "FAILED",
+      };
+    }
   }
 
   if (input.channel === "SMS") {
@@ -232,14 +244,27 @@ export async function createJobOffer(input: {
   title: string;
   description: string;
   requiredSkills: string;
-  companyId: string;
+  companyId?: string;
+  companyName: string;
 }) {
+  const companyName = input.companyName.trim();
+  const existingCompany = input.companyId
+    ? await prisma.company.findUnique({ where: { id: input.companyId } })
+    : await prisma.company.findFirst({
+        where: { name: { equals: companyName, mode: "insensitive" } },
+      });
+  const company =
+    existingCompany ??
+    (await prisma.company.create({
+      data: { name: companyName },
+    }));
+
   return prisma.jobOffer.create({
     data: {
       title: input.title,
       description: input.description,
       requiredSkills: splitSkills(input.requiredSkills),
-      companyId: input.companyId,
+      companyId: company.id,
     },
   });
 }

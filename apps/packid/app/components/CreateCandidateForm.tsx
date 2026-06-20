@@ -11,18 +11,126 @@ type JobOption = {
   };
 };
 
+type ImportedCandidateData = {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string;
+  resumeUrl?: string;
+  jobOfferId?: string;
+};
+
 export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
   const router = useRouter();
   const [error, setError] = useState("");
+  const [importMessage, setImportMessage] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
+  const [clipboardText, setClipboardText] = useState("");
   const [interviewUrl, setInterviewUrl] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [resumeUrl, setResumeUrl] = useState("");
+  const [jobOfferId, setJobOfferId] = useState(jobs[0]?.id ?? "");
   const [invitationMode, setInvitationMode] = useState<"create" | "createAndNotify">(
     "create",
   );
   const [communicationChannel, setCommunicationChannel] = useState("WHATSAPP");
 
+  const applyImportedCandidate = (imported: ImportedCandidateData) => {
+    const applied: string[] = [];
+
+    if (imported.firstName) {
+      setFirstName(imported.firstName);
+      applied.push("prenom");
+    }
+
+    if (imported.lastName) {
+      setLastName(imported.lastName);
+      applied.push("nom");
+    }
+
+    if (imported.email) {
+      setEmail(imported.email);
+      applied.push("email");
+    }
+
+    if (imported.phoneNumber) {
+      setPhoneNumber(imported.phoneNumber);
+      applied.push("telephone");
+    }
+
+    if (imported.resumeUrl) {
+      setResumeUrl(imported.resumeUrl);
+      applied.push("lien CV");
+    }
+
+    if (imported.jobOfferId) {
+      setJobOfferId(imported.jobOfferId);
+      applied.push("offre");
+    }
+
+    setImportMessage(
+      applied.length
+        ? `Informations importees : ${applied.join(", ")}.`
+        : "Aucune information reconnue automatiquement.",
+    );
+  };
+
+  const importCandidateData = async (input: { file?: File; text?: string }) => {
+    setError("");
+    setImportMessage("");
+    setIsImporting(true);
+
+    const formData = new FormData();
+    if (input.file) formData.append("file", input.file);
+    if (input.text) formData.append("text", input.text);
+
+    const response = await fetch("/api/candidates/import", {
+      method: "POST",
+      body: formData,
+    });
+    const body = (await response.json().catch(() => null)) as {
+      imported?: ImportedCandidateData;
+      error?: string;
+    } | null;
+
+    setIsImporting(false);
+
+    if (!response.ok || !body?.imported) {
+      setError(body?.error ?? "Import des informations candidat impossible.");
+      return;
+    }
+
+    applyImportedCandidate(body.imported);
+  };
+
+  const importClipboard = async () => {
+    if (clipboardText.trim()) {
+      await importCandidateData({ text: clipboardText });
+      return;
+    }
+
+    if (!navigator.clipboard?.readText) {
+      setError("Lecture du presse-papier indisponible dans ce navigateur.");
+      return;
+    }
+
+    const text = await navigator.clipboard.readText();
+    setClipboardText(text);
+    await importCandidateData({ text });
+  };
+
   const submit = async (formData: FormData) => {
     setError("");
     setInterviewUrl("");
+    formData.set("firstName", firstName);
+    formData.set("lastName", lastName);
+    formData.set("email", email);
+    formData.set("phoneNumber", phoneNumber);
+    formData.set("resumeUrl", resumeUrl);
+    formData.set("jobOfferId", jobOfferId);
     formData.set("invitationMode", invitationMode);
     if (invitationMode === "createAndNotify") {
       formData.set("communicationChannel", communicationChannel);
@@ -53,6 +161,53 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
 
   return (
     <form action={submit} className="rounded-3xl bg-slate-900/80 p-8 ring-1 ring-slate-700/50">
+      <section className="mb-8 rounded-3xl border border-dashed border-slate-700 bg-slate-950/70 p-5">
+        <label className="block text-sm font-semibold text-slate-200">
+          Importer les informations candidat
+        </label>
+        <input
+          type="file"
+          accept=".pdf,.doc,.docx,.rtf,.txt,.md,.csv,.json,.html,.htm,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf,text/plain,text/markdown,text/csv,text/html,application/json"
+          disabled={isImporting}
+          onChange={(event) =>
+            importCandidateData({ file: event.target.files?.[0] })
+          }
+          className="mt-4 block w-full text-sm text-slate-400 file:mr-4 file:rounded-3xl file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-cyan-300 hover:file:bg-slate-700"
+        />
+
+        <label className="mt-5 block text-sm font-semibold text-slate-300">
+          Coller des donnees clé-valeur
+        </label>
+        <textarea
+          value={clipboardText}
+          onChange={(event) => setClipboardText(event.target.value)}
+          rows={5}
+          placeholder={"prenom: Marie\nnom=Durand\nemail,marie@exemple.com\ntelephone:+33612345678"}
+          className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+        />
+        <button
+          type="button"
+          disabled={isImporting}
+          onClick={importClipboard}
+          className="mt-3 rounded-3xl border border-slate-700 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {clipboardText.trim()
+            ? "Remplir depuis le texte"
+            : "Lire le presse-papier"}
+        </button>
+        <p className="mt-3 text-xs leading-5 text-slate-500">
+          Formats acceptes : PDF, DOCX, RTF et fichiers texte. Les lignes
+          clé:valeur, clé=valeur, clé,valeur, tabulations et points-virgules
+          sont reconnues.
+        </p>
+        {isImporting ? (
+          <p className="mt-3 text-sm text-cyan-300">Analyse des informations...</p>
+        ) : null}
+        {importMessage ? (
+          <p className="mt-3 text-sm text-emerald-300">{importMessage}</p>
+        ) : null}
+      </section>
+
       <div className="grid gap-6 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-semibold text-slate-300">
@@ -61,6 +216,8 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
           <input
             name="firstName"
             type="text"
+            value={firstName}
+            onChange={(event) => setFirstName(event.target.value)}
             className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
@@ -71,6 +228,8 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
           <input
             name="lastName"
             type="text"
+            value={lastName}
+            onChange={(event) => setLastName(event.target.value)}
             className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
@@ -83,6 +242,8 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
           <input
             name="email"
             type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
@@ -93,6 +254,8 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
           <input
             name="phoneNumber"
             type="tel"
+            value={phoneNumber}
+            onChange={(event) => setPhoneNumber(event.target.value)}
             className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
@@ -102,6 +265,8 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
       </label>
       <select
         name="jobOfferId"
+        value={jobOfferId}
+        onChange={(event) => setJobOfferId(event.target.value)}
         className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
       >
         {jobs.map((job) => (
@@ -116,6 +281,8 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
       <input
         name="resumeUrl"
         type="url"
+        value={resumeUrl}
+        onChange={(event) => setResumeUrl(event.target.value)}
         placeholder="https://..."
         className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
       />
