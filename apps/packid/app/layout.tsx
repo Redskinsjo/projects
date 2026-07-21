@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Analytics } from "@vercel/analytics/next";
 import AppShell from "./components/AppShell";
 import "./globals.css";
 import {
@@ -65,10 +66,15 @@ async function AuthenticatedLayout({ children }: { children: React.ReactNode }) 
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-slate-950 text-slate-100">
+      <body
+        suppressHydrationWarning
+        className="min-h-full bg-slate-950 text-slate-100"
+      >
         <AppShell>{children}</AppShell>
+        <Analytics />
       </body>
     </html>
   );

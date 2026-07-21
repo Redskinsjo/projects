@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CONTACT_EMAIL, CONTACT_MAILTO } from "../lib/contact";
 
 export const metadata: Metadata = {
   title: "Politique de confidentialite - Packid",
@@ -38,17 +39,17 @@ export default function PrivacyPolicyPage() {
             <p className="mt-3">
               Packid fournit une application d&apos;assistance au recrutement
               permettant aux recruteurs de gerer des candidats, des offres
-              d&apos;emploi, des conversations et des notifications, notamment via
-              WhatsApp Cloud API.
+              d&apos;emploi, des conversations et des notifications, notamment
+              via WhatsApp Cloud API.
             </p>
             <p className="mt-3">
               Pour toute question relative a cette politique, vous pouvez nous
               contacter a l&apos;adresse suivante :{" "}
               <a
-                href="mailto:contact@recrutopia.ai"
+                href={CONTACT_MAILTO}
                 className="font-medium text-emerald-300 hover:text-emerald-200"
               >
-                contact@recrutopia.ai
+                {CONTACT_EMAIL}
               </a>
               .
             </p>
@@ -63,8 +64,8 @@ export default function PrivacyPolicyPage() {
               donnees suivantes : nom, prenom, adresse email, numero de
               telephone, informations de profil candidat, CV, historique de
               conversation, reponses d&apos;entretien, donnees liees aux offres
-              d&apos;emploi et informations techniques necessaires a la securite du
-              service.
+              d&apos;emploi et informations techniques necessaires a la securite
+              du service.
             </p>
             <p className="mt-3">
               Lorsque WhatsApp est utilise, Packid peut traiter le numero de
@@ -95,9 +96,9 @@ export default function PrivacyPolicyPage() {
             <p className="mt-3">
               Packid ne vend pas les donnees personnelles. Les donnees peuvent
               etre partagees avec des prestataires techniques strictement
-              necessaires au fonctionnement du service, comme l&apos;hebergement, la
-              base de donnees, l&apos;envoi d&apos;emails ou la messagerie WhatsApp Cloud
-              API fournie par Meta.
+              necessaires au fonctionnement du service, comme
+              l&apos;hebergement, la base de donnees, l&apos;envoi d&apos;emails
+              ou la messagerie WhatsApp Cloud API fournie par Meta.
             </p>
           </section>
 
@@ -115,13 +116,12 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
-              6. Securite
-            </h2>
+            <h2 className="text-xl font-semibold text-white">6. Securite</h2>
             <p className="mt-3">
               Packid met en place des mesures techniques et organisationnelles
               raisonnables pour proteger les donnees contre l&apos;acces non
-              autorise, la perte, l&apos;alteration ou la divulgation accidentelle.
+              autorise, la perte, l&apos;alteration ou la divulgation
+              accidentelle.
             </p>
           </section>
 
@@ -130,15 +130,15 @@ export default function PrivacyPolicyPage() {
               7. Droits des utilisateurs
             </h2>
             <p className="mt-3">
-              Selon la reglementation applicable, vous pouvez demander l&apos;acces,
-              la rectification, la suppression, la limitation ou l&apos;opposition au
-              traitement de vos donnees. Vous pouvez exercer ces droits en nous
-              contactant a{" "}
+              Selon la reglementation applicable, vous pouvez demander
+              l&apos;acces, la rectification, la suppression, la limitation ou
+              l&apos;opposition au traitement de vos donnees. Vous pouvez
+              exercer ces droits en nous contactant a{" "}
               <a
-                href="mailto:contact@recrutopia.ai"
+                href={CONTACT_MAILTO}
                 className="font-medium text-emerald-300 hover:text-emerald-200"
               >
-                contact@recrutopia.ai
+                {CONTACT_EMAIL}
               </a>
               .
             </p>

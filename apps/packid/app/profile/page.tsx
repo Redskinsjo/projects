@@ -42,37 +42,37 @@ export default async function ProfilePage() {
   const hasPassword = Boolean(user.passwordCredential);
 
   return (
-    <div className="min-h-screen bg-slate-950 px-6 py-8 text-slate-100 sm:px-10">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <section className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6 shadow-2xl shadow-slate-950/30 sm:p-8">
+    <div className="min-h-screen bg-slate-950 px-6 py-8 text-slate-100 sm:px-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <section className="border-b border-slate-800 pb-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-5">
               <UserAvatar
                 user={user}
-                className="h-20 w-20 rounded-3xl"
+                className="h-16 w-16 rounded-lg"
                 textClassName="text-2xl font-semibold"
               />
               <div className="min-w-0">
-                <p className="text-sm font-semibold uppercase text-emerald-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                   Profil recruteur
                 </p>
                 <h1 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
                   {fullName || user.email}
                 </h1>
-                <p className="mt-2 break-words text-sm text-slate-300">
+                <p className="mt-2 break-words text-sm text-slate-400">
                   {user.email}
                 </p>
               </div>
             </div>
 
             <div className="grid gap-3 text-sm sm:grid-cols-2 lg:min-w-80">
-              <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4">
+              <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
                 <p className="text-slate-500">Compte cree</p>
                 <p className="mt-1 font-medium text-slate-100">
                   {formatDate(user.createdAt)}
                 </p>
               </div>
-              <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4">
+              <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-4">
                 <p className="text-slate-500">Derniere mise a jour</p>
                 <p className="mt-1 font-medium text-slate-100">
                   {formatDate(user.updatedAt)}
@@ -83,7 +83,7 @@ export default async function ProfilePage() {
         </section>
 
         <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          <div className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6">
+          <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-6">
             <h2 className="text-lg font-semibold text-white">
               Informations connues
             </h2>
@@ -117,18 +117,18 @@ export default async function ProfilePage() {
             </dl>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6">
+          <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-6">
             <div className="flex items-center justify-between gap-4">
               <h2 className="text-lg font-semibold text-white">
                 Methodes de connexion
               </h2>
-              <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300 ring-1 ring-emerald-300/20">
+              <span className="rounded-md bg-emerald-400/10 px-2.5 py-1 text-xs font-medium text-emerald-300 ring-1 ring-emerald-300/20">
                 {user.oauthAccounts.length + (hasPassword ? 1 : 0)} active(s)
               </span>
             </div>
 
             <div className="mt-6 space-y-4">
-              <div className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4">
+              <div className="rounded-lg border border-slate-800 bg-slate-950/70 p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="font-semibold text-slate-100">
@@ -156,7 +156,7 @@ export default async function ProfilePage() {
                 return (
                   <div
                     key={account.id}
-                    className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4"
+                    className="rounded-lg border border-slate-800 bg-slate-950/70 p-4"
                   >
                     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                       <div>
@@ -167,7 +167,7 @@ export default async function ProfilePage() {
                           Lie le {formatDate(account.createdAt)}
                         </p>
                       </div>
-                      <span className="rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-300">
+                      <span className="rounded-md bg-cyan-400/10 px-2.5 py-1 text-xs font-medium text-cyan-300">
                         Social login
                       </span>
                     </div>
@@ -208,7 +208,7 @@ export default async function ProfilePage() {
                         {keys.map((key) => (
                           <span
                             key={key}
-                            className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-300"
+                            className="rounded-md bg-slate-800 px-2.5 py-1 text-xs text-slate-300"
                           >
                             {key}
                           </span>
@@ -222,13 +222,13 @@ export default async function ProfilePage() {
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6">
+        <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-6">
           <h2 className="text-lg font-semibold text-white">Sessions recentes</h2>
           <div className="mt-5 grid gap-3 md:grid-cols-2">
             {user.sessions.map((session) => (
               <div
                 key={session.id}
-                className="rounded-3xl border border-slate-800 bg-slate-950/70 p-4 text-sm"
+                className="rounded-lg border border-slate-800 bg-slate-950/70 p-4 text-sm"
               >
                 <p className="font-medium text-slate-100">
                   Session ouverte le {formatDate(session.createdAt)}
@@ -242,7 +242,7 @@ export default async function ProfilePage() {
         </section>
 
         {hasPassword ? (
-          <section className="rounded-[2rem] border border-slate-800 bg-slate-900/80 p-6">
+          <section className="rounded-lg border border-slate-800 bg-slate-900/70 p-6">
             <h2 className="text-lg font-semibold text-white">
               Modifier le mot de passe
             </h2>

@@ -7,6 +7,16 @@ type PasswordResetEmailInput = {
   resetUrl: string;
 };
 
+type ContactEmailInput = {
+  firstName: string;
+  lastName: string;
+  companyName: string;
+  companySector: string;
+  email: string;
+  phoneNumber: string;
+  message: string;
+};
+
 type SmtpConfig = {
   host: string;
   port: number;
@@ -67,12 +77,14 @@ function buildMessage(input: {
   subject: string;
   text: string;
   html: string;
+  replyTo?: string;
 }) {
   const boundary = `packid-${cryptoRandomBoundary()}`;
 
   return [
     `From: ${input.from}`,
     `To: ${input.to}`,
+    ...(input.replyTo ? [`Reply-To: ${input.replyTo}`] : []),
     `Subject: ${encodeHeader(input.subject)}`,
     "MIME-Version: 1.0",
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
@@ -103,6 +115,7 @@ async function sendSmtpEmail(input: {
   subject: string;
   text: string;
   html: string;
+  replyTo?: string;
 }) {
   const socket = input.config.secure
     ? tls.connect({
@@ -199,6 +212,7 @@ async function sendSmtpEmail(input: {
       subject: input.subject,
       text: input.text,
       html: input.html,
+      replyTo: input.replyTo,
     })}\r\n.`,
   );
   await expect([250]);
@@ -249,6 +263,73 @@ export async function sendPasswordResetEmail(input: PasswordResetEmailInput) {
     subject,
     text,
     html,
+  });
+
+  return { sent: true, simulated: false };
+}
+
+export async function sendContactEmail(input: ContactEmailInput) {
+  const smtpConfig = getSmtpConfig();
+  const to = process.env.SMTP_USER;
+  const fullName = `${input.firstName} ${input.lastName}`.trim();
+  const subject = `Nouveau message contact Packid - ${input.companyName}`;
+  const text = [
+    "Nouveau message depuis le formulaire de contact Packid.",
+    "",
+    `Prenom: ${input.firstName}`,
+    `Nom: ${input.lastName}`,
+    `Entreprise: ${input.companyName}`,
+    `Secteur: ${input.companySector}`,
+    `Email: ${input.email}`,
+    `Telephone: ${input.phoneNumber}`,
+    "",
+    "Message:",
+    input.message,
+  ].join("\n");
+  const html = `
+    <p>Nouveau message depuis le formulaire de contact Packid.</p>
+    <dl>
+      <dt>Nom</dt>
+      <dd>${escapeHtml(fullName)}</dd>
+      <dt>Entreprise</dt>
+      <dd>${escapeHtml(input.companyName)}</dd>
+      <dt>Secteur</dt>
+      <dd>${escapeHtml(input.companySector)}</dd>
+      <dt>Email</dt>
+      <dd>${escapeHtml(input.email)}</dd>
+      <dt>Telephone</dt>
+      <dd>${escapeHtml(input.phoneNumber)}</dd>
+    </dl>
+    <p><strong>Message</strong></p>
+    <p>${escapeHtml(input.message).replaceAll("\n", "<br />")}</p>
+  `;
+
+  if (!smtpConfig || !to) {
+    console.info("Contact email simulated", {
+      to,
+      from: input.email,
+      companyName: input.companyName,
+    });
+
+    return { sent: false, simulated: true };
+  }
+
+  console.info("Contact email SMTP send", {
+    to,
+    host: smtpConfig.host,
+    port: smtpConfig.port,
+    secure: smtpConfig.secure,
+    from: smtpConfig.from,
+    replyTo: input.email,
+  });
+
+  await sendSmtpEmail({
+    config: smtpConfig,
+    to,
+    subject,
+    text,
+    html,
+    replyTo: input.email,
   });
 
   return { sent: true, simulated: false };
