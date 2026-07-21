@@ -42,7 +42,7 @@ export default function ChangePasswordForm() {
           name="currentPassword"
           type="password"
           autoComplete="current-password"
-          className="mt-3 w-full rounded-3xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
+          className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/70 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
         />
       </div>
 
@@ -54,7 +54,7 @@ export default function ChangePasswordForm() {
           name="newPassword"
           type="password"
           autoComplete="new-password"
-          className="mt-3 w-full rounded-3xl border border-slate-800 bg-slate-950/70 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/20"
+          className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/70 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
         />
         <p className="mt-2 text-xs text-slate-500">Minimum 10 caracteres.</p>
       </div>
@@ -62,18 +62,18 @@ export default function ChangePasswordForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex rounded-full bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex rounded-lg bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Modification..." : "Modifier le mot de passe"}
       </button>
 
       {error ? (
-        <div className="rounded-3xl bg-red-500/10 p-4 text-sm text-red-100 ring-1 ring-red-300/20">
+        <div className="rounded-lg bg-red-500/10 p-4 text-sm text-red-100 ring-1 ring-red-300/20">
           {error}
         </div>
       ) : null}
       {success ? (
-        <div className="rounded-3xl bg-emerald-400/10 p-4 text-sm text-emerald-100 ring-1 ring-emerald-300/20">
+        <div className="rounded-lg bg-emerald-400/10 p-4 text-sm text-emerald-100 ring-1 ring-emerald-300/20">
           {success}
         </div>
       ) : null}

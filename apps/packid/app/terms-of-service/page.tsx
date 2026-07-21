@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CONTACT_EMAIL, CONTACT_MAILTO } from "../lib/contact";
 
 export const metadata: Metadata = {
   title: "Conditions de service - Packid",
-  description:
-    "Conditions de service applicables a l'utilisation de Packid.",
+  description: "Conditions de service applicables a l'utilisation de Packid.",
 };
 
 export default function TermsOfServicePage() {
@@ -48,10 +48,10 @@ export default function TermsOfServicePage() {
               2. Acces et compte utilisateur
             </h2>
             <p className="mt-3">
-              L&apos;utilisation de certaines fonctionnalites necessite un compte.
-              L&apos;utilisateur s&apos;engage a fournir des informations exactes,
-              a proteger ses identifiants et a signaler toute utilisation non
-              autorisee de son compte.
+              L&apos;utilisation de certaines fonctionnalites necessite un
+              compte. L&apos;utilisateur s&apos;engage a fournir des
+              informations exactes, a proteger ses identifiants et a signaler
+              toute utilisation non autorisee de son compte.
             </p>
           </section>
 
@@ -60,9 +60,9 @@ export default function TermsOfServicePage() {
               3. Utilisation acceptable
             </h2>
             <p className="mt-3">
-              L&apos;utilisateur s&apos;engage a utiliser Packid uniquement dans un
-              cadre legal et professionnel. Il est interdit d&apos;utiliser le
-              service pour envoyer des contenus illicites, trompeurs,
+              L&apos;utilisateur s&apos;engage a utiliser Packid uniquement dans
+              un cadre legal et professionnel. Il est interdit d&apos;utiliser
+              le service pour envoyer des contenus illicites, trompeurs,
               discriminatoires, abusifs, non sollicites ou contraires aux
               politiques applicables des services tiers connectes.
             </p>
@@ -74,10 +74,11 @@ export default function TermsOfServicePage() {
             </h2>
             <p className="mt-3">
               Lorsque Packid permet l&apos;envoi de notifications via WhatsApp,
-              email ou tout autre canal, l&apos;utilisateur doit s&apos;assurer qu&apos;il
-              dispose d&apos;une base legale ou d&apos;un consentement approprie pour
-              contacter les destinataires. L&apos;utilisation de WhatsApp reste
-              soumise aux conditions et politiques de Meta et WhatsApp.
+              email ou tout autre canal, l&apos;utilisateur doit s&apos;assurer
+              qu&apos;il dispose d&apos;une base legale ou d&apos;un
+              consentement approprie pour contacter les destinataires.
+              L&apos;utilisation de WhatsApp reste soumise aux conditions et
+              politiques de Meta et WhatsApp.
             </p>
           </section>
 
@@ -110,10 +111,10 @@ export default function TermsOfServicePage() {
               6. Disponibilite du service
             </h2>
             <p className="mt-3">
-              Packid s&apos;efforce de fournir un service fiable, mais ne garantit
-              pas une disponibilite continue, sans interruption ni erreur. Des
-              maintenances, evolutions ou incidents techniques peuvent affecter
-              temporairement l&apos;acces au service.
+              Packid s&apos;efforce de fournir un service fiable, mais ne
+              garantit pas une disponibilite continue, sans interruption ni
+              erreur. Des maintenances, evolutions ou incidents techniques
+              peuvent affecter temporairement l&apos;acces au service.
             </p>
           </section>
 
@@ -130,16 +131,14 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
-              8. Contact
-            </h2>
+            <h2 className="text-xl font-semibold text-white">8. Contact</h2>
             <p className="mt-3">
               Pour toute question relative aux conditions de service, contactez{" "}
               <a
-                href="mailto:contact@recrutopia.ai"
+                href={CONTACT_MAILTO}
                 className="font-medium text-emerald-300 hover:text-emerald-200"
               >
-                contact@recrutopia.ai
+                {CONTACT_EMAIL}
               </a>
               .
             </p>

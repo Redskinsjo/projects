@@ -144,8 +144,8 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
   };
 
   return (
-    <form action={submit} className="rounded-3xl bg-slate-900/80 p-8 ring-1 ring-slate-700/50">
-      <section className="mb-8 rounded-3xl border border-dashed border-slate-700 bg-slate-950/70 p-5">
+    <form action={submit} className="rounded-lg bg-slate-900/70 p-8 border border-slate-800">
+      <section className="mb-8 rounded-lg border border-dashed border-slate-700 bg-slate-950/80 p-5">
         <label className="block text-sm font-semibold text-slate-200">
           Importer une fiche de poste
         </label>
@@ -154,7 +154,7 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
           accept=".pdf,.doc,.docx,.rtf,.txt,.md,.csv,.json,.html,.htm,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/rtf,text/plain,text/markdown,text/csv,text/html,application/json"
           disabled={isImporting}
           onChange={(event) => importJobData({ file: event.target.files?.[0] })}
-          className="mt-4 block w-full text-sm text-slate-400 file:mr-4 file:rounded-3xl file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-cyan-300 hover:file:bg-slate-700"
+          className="mt-4 block w-full text-sm text-slate-400 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-cyan-300 hover:file:bg-slate-700"
         />
 
         <label className="mt-5 block text-sm font-semibold text-slate-300">
@@ -165,13 +165,13 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
           onChange={(event) => setClipboardText(event.target.value)}
           rows={5}
           placeholder={"entreprise: NovaStudio Digital\ntitre=Designer UI/UX Senior\ncompetences,Figma, UI/UX, HTML, CSS\ndescription: ..."}
-          className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+          className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
         />
         <button
           type="button"
           disabled={isImporting}
           onClick={importClipboard}
-          className="mt-3 rounded-3xl border border-slate-700 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-3 rounded-lg border border-slate-700 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {clipboardText.trim()
             ? "Remplir depuis le texte"
@@ -202,7 +202,7 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
             value={companyName}
             onChange={(event) => setCompanyName(event.target.value)}
             placeholder="NovaStudio Digital"
-            className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
           <datalist id="job-company-options">
             {companies.map((company) => (
@@ -220,7 +220,7 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
             value={title}
             onChange={(event) => setTitle(event.target.value)}
             placeholder="Account Executive"
-            className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
       </div>
@@ -232,7 +232,7 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
         rows={8}
         value={description}
         onChange={(event) => setDescription(event.target.value)}
-        className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+        className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
       />
       <label className="mt-6 block text-sm font-semibold text-slate-300">
         Competences requises
@@ -243,9 +243,9 @@ export default function CreateJobForm({ companies }: { companies: CompanyOption[
         value={requiredSkills}
         onChange={(event) => setRequiredSkills(event.target.value)}
         placeholder="React, PostgreSQL, discovery client"
-        className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+        className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
       />
-      <button className="mt-8 rounded-3xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400">
+      <button className="mt-8 rounded-lg bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
         Creer l&apos;offre
       </button>
       {error ? <p className="mt-4 text-sm text-red-300">{error}</p> : null}

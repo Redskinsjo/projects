@@ -4,6 +4,7 @@ export const PUBLIC_PAGE_PATHS = new Set([
   "/signup",
   "/forgot-password",
   "/reset-password",
+  "/contact",
   "/privacy-policy",
   "/terms-of-service",
   "/user-data-deletion",
@@ -15,6 +16,7 @@ export const PUBLIC_API_PATH_PREFIXES = [
   "/api/auth/forgot-password",
   "/api/auth/reset-password",
   "/api/auth/social",
+  "/api/contact",
   "/api/whatsapp/webhook",
   "/api/interviews",
 ];

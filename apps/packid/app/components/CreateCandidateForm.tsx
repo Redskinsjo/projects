@@ -198,8 +198,8 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
   };
 
   return (
-    <form action={submit} className="rounded-3xl bg-slate-900/80 p-8 ring-1 ring-slate-700/50">
-      <section className="mb-8 rounded-3xl border border-dashed border-slate-700 bg-slate-950/70 p-5">
+    <form action={submit} className="rounded-lg bg-slate-900/70 p-8 border border-slate-800">
+      <section className="mb-8 rounded-lg border border-dashed border-slate-700 bg-slate-950/80 p-5">
         <label className="block text-sm font-semibold text-slate-200">
           Importer les informations candidat
         </label>
@@ -210,7 +210,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
           onChange={(event) =>
             importCandidateData({ file: event.target.files?.[0] })
           }
-          className="mt-4 block w-full text-sm text-slate-400 file:mr-4 file:rounded-3xl file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-cyan-300 hover:file:bg-slate-700"
+          className="mt-4 block w-full text-sm text-slate-400 file:mr-4 file:rounded-lg file:border-0 file:bg-slate-800 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-cyan-300 hover:file:bg-slate-700"
         />
 
         <label className="mt-5 block text-sm font-semibold text-slate-300">
@@ -221,13 +221,13 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
           onChange={(event) => setClipboardText(event.target.value)}
           rows={5}
           placeholder={"prenom: Marie\nnom=Durand\nemail,marie@exemple.com\ntelephone:+33612345678"}
-          className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+          className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
         />
         <button
           type="button"
           disabled={isImporting}
           onClick={importClipboard}
-          className="mt-3 rounded-3xl border border-slate-700 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-3 rounded-lg border border-slate-700 px-5 py-2 text-sm font-semibold text-cyan-300 transition hover:border-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {clipboardText.trim()
             ? "Remplir depuis le texte"
@@ -256,7 +256,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
             type="text"
             value={firstName}
             onChange={(event) => setFirstName(event.target.value)}
-            className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
         <div>
@@ -268,7 +268,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
             type="text"
             value={lastName}
             onChange={(event) => setLastName(event.target.value)}
-            className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
       </div>
@@ -282,7 +282,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+            className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
           />
         </div>
         <div>
@@ -294,7 +294,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
               name="phoneCountryCode"
               value={phoneCountryCode}
               onChange={(event) => setPhoneCountryCode(event.target.value)}
-              className="w-20 shrink-0 rounded-3xl border border-slate-800 bg-slate-950/95 px-2 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 sm:w-24"
+              className="w-20 shrink-0 rounded-lg border border-slate-800 bg-slate-950/95 px-2 py-3 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 sm:w-24"
             >
               {COUNTRY_DIAL_CODES.map((country) => (
                 <option key={country.code} value={country.code}>
@@ -308,7 +308,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
               value={phoneNumber}
               onChange={(event) => setPhoneNumber(event.target.value)}
               placeholder="6 12 34 56 78"
-              className="min-w-0 flex-1 rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              className="min-w-0 flex-1 rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
             />
           </div>
           <p className="mt-2 text-xs text-slate-500">
@@ -323,7 +323,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
         name="jobOfferId"
         value={jobOfferId}
         onChange={(event) => setJobOfferId(event.target.value)}
-        className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+        className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
       >
         {jobs.map((job) => (
           <option key={job.id} value={job.id}>
@@ -340,15 +340,15 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
         value={resumeUrl}
         onChange={(event) => setResumeUrl(event.target.value)}
         placeholder="https://..."
-        className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+        className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
       />
 
-      <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-950/70 p-5">
+      <div className="mt-8 rounded-lg border border-slate-800 bg-slate-950/80 p-5">
         <p className="text-sm font-semibold text-slate-200">
           Action apres creation
         </p>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
-          <label className="flex cursor-pointer items-start gap-3 rounded-3xl border border-slate-800 bg-slate-900 px-4 py-4 transition hover:border-cyan-400">
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 px-4 py-4 transition hover:border-cyan-400">
             <input
               type="radio"
               name="candidateCreationChoice"
@@ -366,7 +366,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
               </span>
             </span>
           </label>
-          <label className="flex cursor-pointer items-start gap-3 rounded-3xl border border-slate-800 bg-slate-900 px-4 py-4 transition hover:border-cyan-400">
+          <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-800 bg-slate-900 px-4 py-4 transition hover:border-cyan-400">
             <input
               type="radio"
               name="candidateCreationChoice"
@@ -394,7 +394,7 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
             <select
               value={communicationChannel}
               onChange={(event) => setCommunicationChannel(event.target.value)}
-              className="mt-2 w-full rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
+              className="mt-2 w-full rounded-lg border border-slate-800 bg-slate-950/95 px-4 py-3 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20"
             >
               <option value="WHATSAPP">WhatsApp</option>
               <option value="SMS">SMS</option>
@@ -404,20 +404,20 @@ export default function CreateCandidateForm({ jobs }: { jobs: JobOption[] }) {
         ) : null}
       </div>
 
-      <button className="mt-8 rounded-3xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400">
+      <button className="mt-8 rounded-lg bg-cyan-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
         {invitationMode === "createAndNotify"
           ? "Creer et avertir"
           : "Creer le candidat"}
       </button>
       {error ? <p className="mt-4 text-sm text-red-300">{error}</p> : null}
       {interviewUrl ? (
-        <div className="mt-6 rounded-3xl bg-emerald-500/10 p-4 text-sm text-emerald-100 ring-1 ring-emerald-300/20">
+        <div className="mt-6 rounded-lg bg-emerald-500/10 p-4 text-sm text-emerald-100 ring-1 ring-emerald-300/20">
           Invitation preparee : {interviewUrl}
         </div>
       ) : null}
       {deliveryNotice ? (
         <div
-          className={`mt-4 rounded-3xl p-4 text-sm ring-1 ${
+          className={`mt-4 rounded-lg p-4 text-sm ring-1 ${
             deliveryNotice.status === "FAILED"
               ? "bg-red-500/10 text-red-100 ring-red-300/20"
               : deliveryNotice.status === "SIMULATED"

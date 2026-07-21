@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 const links = [
   {
-    label: "Dashboard",
+    label: "Tableau de bord",
     href: "/dashboard",
     icon: (
       <svg
@@ -38,7 +38,7 @@ const links = [
     ),
   },
   {
-    label: "Candidat",
+    label: "Nouveau candidat",
     href: "/add",
     icon: (
       <svg
@@ -54,7 +54,7 @@ const links = [
     ),
   },
   {
-    label: "Offre",
+    label: "Nouvelle offre",
     href: "/jobs/new",
     icon: (
       <svg
@@ -76,30 +76,46 @@ export default function TopNav() {
   const pathname = usePathname();
 
   return (
-    <div className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/95 px-4 py-4 shadow-sm shadow-slate-950/20 backdrop-blur-xl sm:px-8">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
-            Espace recruteur
-          </p>
-          <h2 className="text-lg font-semibold text-white sm:text-xl">
-            Navigation rapide
-          </h2>
+    <header className="sticky top-0 z-10 border-b border-slate-800 bg-slate-950/95 px-4 py-3 shadow-sm shadow-slate-950/20 backdrop-blur-xl sm:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex items-center gap-3">
+          <span className="h-8 w-1 rounded-full bg-cyan-300" />
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Espace recruteur
+            </p>
+            <h2 className="text-base font-semibold text-white">
+              Pilotage des recrutements
+            </h2>
+          </div>
         </div>
-        <nav className="flex flex-1 flex-wrap items-center justify-end gap-3">
+        <nav className="flex flex-wrap items-center gap-2">
           {links.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              pathname === link.href || pathname.startsWith(`${link.href}/`);
+            const isPrimaryAction = link.href === "/add";
+
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`inline-flex min-w-[10rem] items-center gap-3 rounded-3xl border px-4 py-3 text-sm font-semibold transition ${
-                  isActive
-                    ? "border-gradient-to-r from-cyan-400 via-slate-200 to-emerald-400 bg-slate-900 text-white shadow-lg shadow-cyan-500/10"
-                    : "border-slate-800 bg-slate-950/95 text-slate-300 hover:border-slate-700 hover:bg-slate-900 hover:text-white"
+                className={`inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition ${
+                  isPrimaryAction && !isActive
+                    ? "border-cyan-400/40 bg-cyan-400 text-slate-950 hover:bg-cyan-300"
+                    : isActive
+                      ? "border-slate-700 bg-slate-900 text-white"
+                      : "border-transparent text-slate-400 hover:border-slate-800 hover:bg-slate-900/80 hover:text-white"
                 }`}
               >
-                <span className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-900 text-cyan-300">
+                <span
+                  className={`inline-flex h-7 w-7 items-center justify-center rounded-md ${
+                    isPrimaryAction && !isActive
+                      ? "bg-slate-950/10 text-slate-950"
+                      : isActive
+                        ? "bg-cyan-400/10 text-cyan-200"
+                        : "bg-slate-900 text-slate-500"
+                  }`}
+                >
                   {link.icon}
                 </span>
                 <span>{link.label}</span>
@@ -108,6 +124,6 @@ export default function TopNav() {
           })}
         </nav>
       </div>
-    </div>
+    </header>
   );
 }

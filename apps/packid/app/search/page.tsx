@@ -35,22 +35,25 @@ export default async function SearchPage({
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 px-6 py-12 text-slate-100 sm:px-10">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <header className="rounded-[2rem] bg-slate-900/90 p-10 shadow-2xl shadow-slate-950/30 ring-1 ring-white/10">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
+    <div className="min-h-screen bg-slate-950 px-6 py-8 text-slate-100 sm:px-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <header className="border-b border-slate-800 pb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Recherche
           </p>
-          <h1 className="mt-4 text-4xl font-semibold text-white sm:text-5xl">
+          <h1 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
             Filtrer les candidats
           </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+            Retrouvez rapidement les profils par statut, score, offre ou archive.
+          </p>
         </header>
 
-        <form className="grid gap-4 rounded-3xl bg-slate-900/80 p-6 ring-1 ring-slate-700/50 md:grid-cols-5">
+        <form className="grid gap-3 rounded-lg border border-slate-800 bg-slate-900/70 p-4 md:grid-cols-5">
           <select
             name="status"
             defaultValue={params.status ?? ""}
-            className="rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100"
+            className="rounded-lg border border-slate-800 bg-slate-950/95 px-3 py-2.5 text-sm text-slate-100"
           >
             <option value="">Tous les statuts</option>
             {[
@@ -74,12 +77,12 @@ export default async function SearchPage({
             max="100"
             defaultValue={params.minScore ?? ""}
             placeholder="Score minimum"
-            className="rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100"
+            className="rounded-lg border border-slate-800 bg-slate-950/95 px-3 py-2.5 text-sm text-slate-100"
           />
           <select
             name="jobId"
             defaultValue={params.jobId ?? ""}
-            className="rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100"
+            className="rounded-lg border border-slate-800 bg-slate-950/95 px-3 py-2.5 text-sm text-slate-100"
           >
             <option value="">Toutes les offres</option>
             {jobs.map((job) => (
@@ -91,18 +94,18 @@ export default async function SearchPage({
           <select
             name="archived"
             defaultValue={archiveFilter}
-            className="rounded-3xl border border-slate-800 bg-slate-950/95 px-4 py-3 text-sm text-slate-100"
+            className="rounded-lg border border-slate-800 bg-slate-950/95 px-3 py-2.5 text-sm text-slate-100"
           >
             <option value="active">Non archives</option>
             <option value="archived">Archives</option>
             <option value="all">Tous</option>
           </select>
-          <button className="rounded-3xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950">
+          <button className="rounded-lg bg-cyan-400 px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300">
             Filtrer
           </button>
         </form>
 
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-2">
           {candidates.map((candidate) => (
             <CandidateCard key={candidate.id} candidate={candidate} />
           ))}

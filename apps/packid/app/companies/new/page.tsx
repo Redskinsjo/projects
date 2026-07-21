@@ -4,15 +4,19 @@ export const dynamic = "force-dynamic";
 
 export default function NewCompanyPage() {
   return (
-    <div className="min-h-screen bg-slate-950 px-6 py-12 text-slate-100 sm:px-10">
-      <div className="mx-auto max-w-4xl space-y-8">
-        <header className="rounded-[2rem] bg-slate-900/90 p-10 ring-1 ring-white/10">
-          <p className="text-sm uppercase tracking-[0.3em] text-slate-500">
+    <div className="min-h-screen bg-slate-950 px-6 py-8 text-slate-100 sm:px-8">
+      <div className="mx-auto max-w-6xl space-y-6">
+        <header className="border-b border-slate-800 pb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
             Entreprise
           </p>
-          <h1 className="mt-4 text-4xl font-semibold text-white">
+          <h1 className="mt-2 text-3xl font-semibold text-white sm:text-4xl">
             Creer une entreprise
           </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+            Ajoutez une entreprise pour rattacher vos offres et structurer le
+            suivi des candidats.
+          </p>
         </header>
         <CreateCompanyForm />
       </div>

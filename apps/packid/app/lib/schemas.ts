@@ -10,6 +10,19 @@ export const createOrganizationSchema = z.object({
   name: z.string().trim().min(2, "Le nom de l'organisation est requis."),
 });
 
+export const contactFormSchema = z.object({
+  firstName: z.string().trim().min(1, "Le prenom est requis."),
+  lastName: z.string().trim().min(1, "Le nom est requis."),
+  companyName: z.string().trim().min(1, "Le nom de l'entreprise est requis."),
+  companySector: z
+    .string()
+    .trim()
+    .min(1, "Le secteur de l'entreprise est requis."),
+  email: z.string().trim().email("Email invalide.").toLowerCase(),
+  phoneNumber: z.string().trim().min(1, "Le numero de telephone est requis."),
+  message: z.string().trim().min(1, "Le message est requis."),
+});
+
 export const createRecruiterSchema = z.object({
   email: z.string().trim().email("Email recruteur invalide."),
   firstName: z.string().trim().min(1, "Le prenom est requis."),

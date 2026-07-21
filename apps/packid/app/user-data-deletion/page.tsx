@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { CONTACT_EMAIL, CONTACT_MAILTO } from "../lib/contact";
 
 export const metadata: Metadata = {
   title: "Suppression de donnees utilisateur - Packid",
@@ -39,17 +40,18 @@ export default function UserDataDeletionPage() {
               Pour demander la suppression de vos donnees personnelles traitees
               par Packid, envoyez un email a{" "}
               <a
-                href="mailto:contact@recrutopia.ai"
+                href={CONTACT_MAILTO}
                 className="font-medium text-emerald-300 hover:text-emerald-200"
               >
-                contact@recrutopia.ai
+                {CONTACT_EMAIL}
               </a>{" "}
               avec l&apos;objet &quot;Suppression de donnees Packid&quot;.
             </p>
             <p className="mt-3">
-              Merci d&apos;indiquer l&apos;adresse email ou le numero de telephone
-              associe a votre utilisation de Packid, ainsi que toute information
-              permettant d&apos;identifier votre profil ou votre conversation.
+              Merci d&apos;indiquer l&apos;adresse email ou le numero de
+              telephone associe a votre utilisation de Packid, ainsi que toute
+              information permettant d&apos;identifier votre profil ou votre
+              conversation.
             </p>
           </section>
 
@@ -59,9 +61,9 @@ export default function UserDataDeletionPage() {
             </h2>
             <p className="mt-3">
               La demande peut concerner les informations de compte, les donnees
-              candidat, les CV, les conversations, les reponses d&apos;entretien, les
-              notifications WhatsApp ou email, ainsi que les donnees techniques
-              associees a votre profil.
+              candidat, les CV, les conversations, les reponses
+              d&apos;entretien, les notifications WhatsApp ou email, ainsi que
+              les donnees techniques associees a votre profil.
             </p>
           </section>
 
@@ -96,9 +98,7 @@ export default function UserDataDeletionPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-white">
-              Confirmation
-            </h2>
+            <h2 className="text-xl font-semibold text-white">Confirmation</h2>
             <p className="mt-3">
               Une confirmation vous sera envoyee lorsque la demande aura ete
               traitee. Si des donnees ne peuvent pas etre supprimees
@@ -108,16 +108,14 @@ export default function UserDataDeletionPage() {
           </section>
 
           <section className="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-6">
-            <h2 className="text-xl font-semibold text-white">
-              Contact direct
-            </h2>
+            <h2 className="text-xl font-semibold text-white">Contact direct</h2>
             <p className="mt-3">
               Email :{" "}
               <a
-                href="mailto:contact@recrutopia.ai"
+                href={CONTACT_MAILTO}
                 className="font-medium text-emerald-200 hover:text-white"
               >
-                contact@recrutopia.ai
+                {CONTACT_EMAIL}
               </a>
             </p>
           </section>

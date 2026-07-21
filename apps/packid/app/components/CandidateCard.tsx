@@ -39,7 +39,7 @@ export default function CandidateCard({
   const isArchived = Boolean(candidate.archivedAt);
 
   return (
-    <div className="rounded-3xl border border-slate-800 bg-slate-950/95 p-5 shadow-lg shadow-slate-950/10">
+    <div className="rounded-lg border border-slate-800 bg-slate-950/90 p-5 shadow-sm shadow-slate-950/20">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <Link
@@ -53,32 +53,32 @@ export default function CandidateCard({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+          <span className="rounded-md bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-300">
             {statusLabels[candidate.status] ?? candidate.status}
           </span>
           {isArchived ? (
-            <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-300">
+            <span className="rounded-md bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-300">
               Archive
             </span>
           ) : null}
           {typeof candidate.score === "number" ? (
-            <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+            <span className="rounded-md bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-300">
               {candidate.score}/100
             </span>
           ) : null}
         </div>
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-3xl bg-slate-900/80 p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+        <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+          <p className="text-xs font-medium text-slate-500">
             Recommandation
           </p>
           <p className="mt-2 text-sm text-slate-200">
             {latestReport?.recommendation ?? "En attente"}
           </p>
         </div>
-        <div className="rounded-3xl bg-slate-900/80 p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+        <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-3">
+          <p className="text-xs font-medium text-slate-500">
             Interface
           </p>
           <p className="mt-2 text-sm text-slate-200">Entretien Packid</p>
@@ -87,7 +87,7 @@ export default function CandidateCard({
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
           href={`/candidate/${candidate.id}`}
-          className="inline-flex items-center rounded-3xl bg-cyan-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+          className="inline-flex items-center rounded-lg bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300"
         >
           Ouvrir le dossier
         </Link>

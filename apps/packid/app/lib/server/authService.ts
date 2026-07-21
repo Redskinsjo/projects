@@ -27,6 +27,16 @@ function hashToken(token: string) {
   return crypto.createHash("sha256").update(token).digest("hex");
 }
 
+function maskEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+
+  if (!localPart || !domain) {
+    return "***";
+  }
+
+  return `${localPart.slice(0, 1)}***@${domain}`;
+}
+
 function hashPassword(password: string, salt = crypto.randomBytes(16).toString("hex")) {
   const hash = crypto
     .pbkdf2Sync(
@@ -302,7 +312,19 @@ export async function requestPasswordReset(input: {
     include: { passwordCredential: true },
   });
 
-  if (!user?.passwordCredential) {
+  if (!user) {
+    console.info("Password reset skipped: user not found", {
+      email: maskEmail(input.email),
+    });
+
+    return { sent: false, simulated: false };
+  }
+
+  if (!user.passwordCredential) {
+    console.info("Password reset skipped: user has no password credential", {
+      email: maskEmail(user.email),
+    });
+
     return { sent: false, simulated: false };
   }
 
@@ -321,10 +343,23 @@ export async function requestPasswordReset(input: {
 
   const resetUrl = `${getResetBaseUrl(input.requestUrl)}/reset-password?token=${token}`;
 
-  return sendPasswordResetEmail({
+  console.info("Password reset token created", {
+    email: maskEmail(user.email),
+    expiresAt,
+  });
+
+  const delivery = await sendPasswordResetEmail({
     to: user.email,
     resetUrl,
   });
+
+  console.info("Password reset email delivery result", {
+    email: maskEmail(user.email),
+    sent: delivery.sent,
+    simulated: delivery.simulated,
+  });
+
+  return delivery;
 }
 
 export async function resetPasswordWithToken(input: {
