@@ -23,7 +23,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const GOOGLE_ANALYTICS_ID = "G-GEG23Y1E0M";
+const GOOGLE_ANALYTICS_ID =
+  process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "G-GEG23Y1E0M";
 
 export const metadata: Metadata = {
   title: "Packid - Agent IA Recrutement",
@@ -38,7 +39,11 @@ export default function RootLayout({
   return <AuthenticatedLayout>{children}</AuthenticatedLayout>;
 }
 
-async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+async function AuthenticatedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const headerStore = await headers();
   const pathname = headerStore.get("x-packid-pathname") ?? "/";
   const isApplicationPage = isApplicationPagePath(pathname);
@@ -80,9 +85,9 @@ async function AuthenticatedLayout({ children }: { children: React.ReactNode }) 
         <Analytics />
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`}
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
