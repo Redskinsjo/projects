@@ -23,9 +23,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const GOOGLE_ANALYTICS_ID =
-  process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID || "G-GEG23Y1E0M";
-
 export const metadata: Metadata = {
   title: "Packid - Agent IA Recrutement",
   description: "Tableau de bord et interface de gestion des candidats.",
@@ -84,7 +81,7 @@ async function AuthenticatedLayout({
         <AppShell>{children}</AppShell>
         <Analytics />
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ANALYTICS_ID}`}
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`}
           strategy="beforeInteractive"
         />
         <Script id="google-analytics" strategy="beforeInteractive">
@@ -92,7 +89,7 @@ async function AuthenticatedLayout({
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', '${GOOGLE_ANALYTICS_ID}');
+            gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}');
           `}
         </Script>
       </body>
