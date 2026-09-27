@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ResearchStatus {
+  PREPARED
+}
+
+enum ApplicationStatus {
+  IN_PROGRESS
+  SENT
+  INTERVIEW
+  ACCEPTED
+  REJECTED
+}
+
+model User {
+  // Stable, provider-qualified OAuth subject, e.g. google:12345.
+  id           String        @id
+  name         String
+  email        String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  profile      Profile?
+  researches   Research[]
+  applications Application[]
+  cv           Resume?
+
+  @@map("pkida_users")
+}
+
+model Profile {
+  userId     String   @id
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String   @default("")
+  email      String   @default("")
+  phone      String   @default("")
+  location   String   @default("")
+  role       String   @default("")
+  salary     Float    @default(40000)
+  experience Float    @default(0)
+  about      String   @default("")
+  updatedAt  DateTime @updatedAt
+
+  @@map("pkida_profiles")
+}
+
+model Research {
+  id           String         @id @default(uuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  role         String
+  location     String
+  salary       Float
+  experience   Float
+  contract     String
+  remote       String
+  pace         Int
+  keywords     String         @default("")
+  exclusions   String         @default("")
+  review       Boolean        @default(true)
+  status       ResearchStatus @default(PREPARED)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  applications Application[]
+
+  @@unique([id, userId])
+  @@index([userId, createdAt])
+  @@map("pkida_researches")
+}
+
+model Application {
+  id         String            @id @default(uuid())
+  userId     String
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  researchId String?
+  // Composite foreign key also prevents linking another account's research.
+  research   Research?         @relation(fields: [researchId, userId], references: [id, userId], onDelete: NoAction)
+  company    String
+  role       String
+  location   String
+  date       DateTime          @default(now())
+  status     ApplicationStatus @default(IN_PROGRESS)
+  sourceUrl  String?
+  notes      String            @default("")
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, status])
+  @@index([researchId, userId])
+  @@map("pkida_applications")
+}
+
+model Resume {
+  userId     String   @id
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name       String
+  size       Int
+  content    Bytes
+  uploadedAt DateTime @default(now())
+
+  @@map("pkida_resumes")
+}

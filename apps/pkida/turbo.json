@@ -1,0 +1,27 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "APP_BASE_URL",
+        "SESSION_SECRET",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "LINKEDIN_CLIENT_ID",
+        "LINKEDIN_CLIENT_SECRET",
+        "DATABASE_URL"
+      ]
+    },
+    "dev": {
+      "passThroughEnv": [
+        "APP_BASE_URL",
+        "SESSION_SECRET",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "LINKEDIN_CLIENT_ID",
+        "LINKEDIN_CLIENT_SECRET",
+        "DATABASE_URL"
+      ]
+    }
+  }
+}

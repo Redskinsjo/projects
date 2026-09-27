@@ -1,0 +1,42 @@
+{
+  "name": "pkida",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/database.mjs prepare && next dev --webpack -p 3001",
+    "build": "prisma generate && next build --webpack",
+    "start": "node scripts/database.mjs migrate && next start -p 3001",
+    "lint": "eslint",
+    "check-types": "prisma generate && tsc --noEmit",
+    "test:integration": "node --test tests/integration.mjs",
+    "db:generate": "prisma generate",
+    "db:migrate": "node scripts/database.mjs migrate",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zod": "^4.4.3",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "pg": "^8.21.0",
+    "prisma": "^7.8.0",
+    "dotenv": "^17.4.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "@types/pg": "^8.20.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || ^22.12.0 || >=24.0.0"
+  }
+}

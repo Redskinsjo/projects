@@ -1,0 +1,4 @@
+.data/
+*.tsbuildinfo
+
+app/generated/prisma/
