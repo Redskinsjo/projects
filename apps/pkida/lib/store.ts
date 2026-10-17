@@ -54,7 +54,7 @@ function researchToClient(record: DbResearch): Campaign {
     keywords: record.keywords,
     exclusions: record.exclusions,
     review: record.review,
-    status: "Préparée",
+    status: record.status === "ACTIVE" ? "Active" : record.status === "PAUSED" ? "En pause" : "Préparée",
     createdAt: record.createdAt.toISOString(),
   };
 }

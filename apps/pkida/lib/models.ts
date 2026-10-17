@@ -27,7 +27,7 @@ export type CampaignInput = z.infer<typeof campaignSchema>;
 export type Campaign = CampaignInput & {
   id: string;
   createdAt: string;
-  status: "Préparée";
+  status: "Préparée" | "Active" | "En pause";
 };
 export type Application = {
   researchId?: string | null;

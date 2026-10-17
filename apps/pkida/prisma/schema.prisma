@@ -1,6 +1,7 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  provider             = "prisma-client"
+  output               = "../app/generated/prisma"
+  importFileExtension  = "ts"
 }
 
 datasource db {
@@ -9,6 +10,27 @@ datasource db {
 
 enum ResearchStatus {
   PREPARED
+  ACTIVE
+  PAUSED
+}
+
+enum OfferStatus {
+  ACTIVE
+  EXPIRED
+  REMOVED
+}
+
+enum OfferSourceType {
+  CAREER_SITE
+  JOB_BOARD
+  SOCIAL_NETWORK
+  OTHER
+}
+
+enum SearchRunStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
 }
 
 enum ApplicationStatus {
@@ -66,9 +88,14 @@ model Research {
   exclusions   String         @default("")
   review       Boolean        @default(true)
   status       ResearchStatus @default(PREPARED)
+  lastRunAt    DateTime?
+  nextRunAt    DateTime?
+  lastError    String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   applications Application[]
+  matches      ResearchMatch[]
+  searchRuns   SearchRun[]
 
   @@unique([id, userId])
   @@index([userId, createdAt])
@@ -96,6 +123,100 @@ model Application {
   @@index([userId, status])
   @@index([researchId, userId])
   @@map("pkida_applications")
+}
+
+model Company {
+  id          String      @id @default(uuid())
+  name        String
+  website     String?
+  domain      String?     @unique
+  description String      @default("")
+  sector      String      @default("")
+  industry    String      @default("")
+  location    String      @default("")
+  metadata    Json?
+  offers      JobOffer[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([name])
+  @@map("pkida_companies")
+}
+
+model JobOffer {
+  id             String          @id @default(uuid())
+  companyId      String?
+  company        Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  title          String
+  description    String          @default("")
+  location       String          @default("")
+  employmentType String          @default("")
+  workplaceType  String          @default("")
+  salaryMin      Float?
+  salaryMax      Float?
+  salaryCurrency String?
+  postedAt       DateTime?
+  expiresAt      DateTime?
+  status         OfferStatus     @default(ACTIVE)
+  canonicalUrl   String          @unique
+  rawMetadata    Json?
+  firstSeenAt    DateTime        @default(now())
+  lastSeenAt     DateTime        @default(now())
+  sources        OfferSource[]
+  matches        ResearchMatch[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([status, lastSeenAt])
+  @@index([companyId])
+  @@map("pkida_job_offers")
+}
+
+model OfferSource {
+  id           String          @id @default(uuid())
+  offerId      String
+  offer        JobOffer        @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  type         OfferSourceType
+  name         String
+  sourceUrl    String          @unique
+  externalId   String?
+  metadata     Json?
+  firstSeenAt  DateTime        @default(now())
+  lastSeenAt   DateTime        @default(now())
+
+  @@index([offerId])
+  @@map("pkida_offer_sources")
+}
+
+model ResearchMatch {
+  id            String    @id @default(uuid())
+  researchId    String
+  research      Research  @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  offerId       String
+  offer         JobOffer  @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  score         Int       @default(0)
+  matchReasons  Json?
+  notifiedAt    DateTime?
+  dismissedAt   DateTime?
+  createdAt     DateTime  @default(now())
+
+  @@unique([researchId, offerId])
+  @@index([researchId, notifiedAt, createdAt])
+  @@map("pkida_research_matches")
+}
+
+model SearchRun {
+  id          String         @id @default(uuid())
+  researchId  String
+  research    Research       @relation(fields: [researchId], references: [id], onDelete: Cascade)
+  status      SearchRunStatus @default(RUNNING)
+  startedAt   DateTime       @default(now())
+  completedAt DateTime?
+  resultCount Int            @default(0)
+  error       String?
+
+  @@index([researchId, startedAt])
+  @@map("pkida_search_runs")
 }
 
 model Resume {

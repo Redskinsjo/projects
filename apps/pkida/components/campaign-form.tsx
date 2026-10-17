@@ -142,10 +142,11 @@ export function CampaignForm({ profile }: { profile: Profile }) {
             <Field wide label="Mots-clés à privilégier (facultatif)">
               <input
                 maxLength={500}
-                placeholder="Ex. SaaS, impact, petite équipe…"
+                placeholder={'Ex. node, React, "gestion de projet", "petite équipe"'}
                 value={form.keywords}
                 onChange={(e) => set("keywords", e.target.value)}
               />
+              <small>Séparez les mots-clés par des espaces ou des virgules. Entourez les expressions composées de guillemets.</small>
             </Field>
             <Field wide label="Entreprises ou mots-clés à exclure (facultatif)">
               <input
@@ -159,9 +160,7 @@ export function CampaignForm({ profile }: { profile: Profile }) {
           <h3 className="form-section-title">
             02 <span>Votre rythme, votre contrôle</span>
           </h3>
-          <Field
-            label={`Maximum souhaité : ${form.pace} candidatures par jour`}
-          >
+          <Field label={`Maximum souhaité : ${form.pace} offres par jour`}>
             <input
               type="range"
               min={1}
@@ -177,8 +176,8 @@ export function CampaignForm({ profile }: { profile: Profile }) {
               onChange={(e) => set("review", e.target.checked)}
             />
             <span>
-              <strong>Valider chaque candidature avant envoi</strong>
-              <small>Préférence pour la future automatisation.</small>
+              <strong>Décider moi-même si je souhaite postuler</strong>
+              <small>PKida vous propose des offres, sans candidater à votre place.</small>
             </span>
           </label>
         </div>
@@ -207,14 +206,12 @@ export function CampaignForm({ profile }: { profile: Profile }) {
                 <dd>{form.pace} / jour</dd>
               </div>
               <div>
-                <dt>Validation avant envoi</dt>
+                <dt>Décision de postuler</dt>
                 <dd>{form.review ? "Oui" : "Non"}</dd>
               </div>
             </dl>
             <div className="inline-note">
-              ✧ Cette recherche sera enregistrée comme « Préparée ».
-              L’automatisation sera ajoutée ultérieurement ; aucun envoi ne sera
-              effectué.
+              ✧ Cette recherche sera enregistrée comme « Préparée ». Vous pourrez lancer une première recherche depuis sa page.
             </div>
             <button disabled={busy} className="button full-width">
               {busy ? "Enregistrement…" : "Enregistrer ma recherche"}

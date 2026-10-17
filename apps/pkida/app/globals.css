@@ -1619,3 +1619,20 @@ td small {
     grid-template-columns: 1fr;
   }
 }
+.offer-search-action {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+.offer-search-action small { color: var(--muted, #9aa5b5); }
+.offer-results { display: grid; gap: 1rem; margin-top: 1rem; }
+.offer-card { display: grid; gap: 0.65rem; }
+.offer-card h3 { margin: 0; }
+.offer-company { color: var(--muted, #9aa5b5); font-weight: 600; }
+.offer-metadata, .offer-links { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }
+.offer-metadata { color: var(--muted, #9aa5b5); font-size: 0.85rem; }
+.offer-links a { color: var(--accent, #8de3d1); font-weight: 600; }
+.offer-keywords { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; }
+.offer-keywords > span { border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.65rem; background: var(--soft); font-size: 0.8rem; font-weight: 600; }

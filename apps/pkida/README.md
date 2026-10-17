@@ -35,9 +35,11 @@ Le schéma de référence est dans `prisma/schema.prisma`, avec une migration in
 | ------------- | ---------------------------------------------------------------------------------------------------------------- |
 | `User`        | Identifiant stable du compte OAuth, nom et e-mail du fournisseur                                                 |
 | `Profile`     | Nom, e-mail de contact, téléphone, présentation, poste, lieu, salaire brut annuel et années d’expérience         |
-| `Research`    | Critères de recherche, contrat, mode de travail, mots-clés, exclusions, rythme, validation avant envoi et statut |
+| `Research`    | Critères de recherche, contrat, mode de travail, mots-clés, exclusions, fréquence, validation avant candidature et statut |
 | `Application` | Entreprise, poste, lieu, statut, date, source, notes et recherche associée facultative                           |
 | `Resume`      | CV PDF, nom, taille et date d’import                                                                             |
+| `Company`, `JobOffer`, `OfferSource` | Métadonnées d'entreprise, offres collectées et URL/type de source |
+| `ResearchMatch`, `SearchRun` | Correspondance privée à une recherche, notifications dans l'espace, historique et statut des collectes |
 
 Chaque enregistrement appartient à un utilisateur. Les requêtes sont limitées au compte authentifié. Une clé étrangère composite interdit aussi en base d’associer une candidature à la recherche d’un autre utilisateur. La suppression d’un utilisateur supprime ses données liées ; aucune interface de suppression de compte n’est encore implémentée.
 
@@ -55,7 +57,47 @@ L’ancien répertoire `.data/` reste ignoré et intact, mais n’est plus lu. I
 - `/espace/recherches/nouvelle` : création d’une recherche.
 - `/espace/recherches/[id]` : critères et emplacement pour les offres correspondantes.
 
-Les recherches restent **Préparées**. Aucune collecte d’offres ou candidature automatique n’est lancée.
+Les recherches sont créées en état **Préparée**. Depuis une recherche, l’utilisateur peut lancer une collecte web à la demande. Les résultats sont enregistrés et dédupliqués, puis affichés sur sa page de recherche. Aucune candidature n’est envoyée automatiquement.
+
+### Recherche d'offres
+
+Le script `scripts/sync-companies.mjs` alimente `Company` à partir de l'API publique de l'Annuaire des Entreprises, de l'annuaire paginé de Numeum et des profils d'agences Sortlist. Il conserve les identifiants, secteurs, descriptions, lieux, domaines trouvés et la provenance dans `Company.metadata.sources`. Les imports sont dédupliqués par domaine ou nom ; les fiches officielles conservent leur SIREN dans les métadonnées. Les fiches Sortlist complètent seulement les champs encore vides, sans remplacer les informations déjà saisies. Sortlist est chargé avec Puppeteer; si `/explore` renvoie 403, le script parcourt des pages de catégories publiques prédéfinies. Si un profil d'agence renvoie 403, il importe le résumé de la carte de catégorie; le domaine pourra être recherché ensuite avec `db:enrich-company-domains`. Exécuter depuis `apps/pkida` :
+
+```sh
+npm run db:sync-companies -- --source=all --pages=all
+```
+
+Le script charge `.env.local` et exige `DATABASE_URL`. Node.js 22.6+ est requis pour lancer le client Prisma généré. `--source` accepte `annuaire`, `numeum` ou `sortlist`. Les plafonds peuvent être réglés avec `ANNUAIRE_MAX_PAGES`, `ANNUAIRE_SEARCH_TERMS`, `SORTLIST_MAX_CATEGORIES` et `COMPANY_SCRAPER_MAX_DETAILS`. Numeum est limité à 100 fiches par lancement par défaut (`NUMEUM_MAX_COMPANIES_PER_RUN` pour changer le plafond). `--pages` règle la pagination Numeum. Un curseur local dans `.data/company-sync-state.json` conserve la progression des sources, y compris la position dans une page Numeum ; ce fichier doit être conservé entre deux exécutions.
+
+Puppeteer sert au chargement des pages Sortlist et à la recherche des domaines manquants. Si Chrome n'a pas été téléchargé lors de l'installation des dépendances, installer le navigateur compatible une seule fois :
+
+```sh
+npm run db:install-browser
+```
+
+Pour rechercher les domaines manquants sans utiliser Brave, `scripts/enrich-company-domains.mjs` pilote Puppeteer sur DuckDuckGo HTML, puis vérifie les résultats candidats à partir du nom, de la description, du secteur et du lieu enregistrés. Il ne renseigne un domaine que si le score d'identité atteint le seuil configuré, sinon il laisse l'entreprise à vérifier. Les conflits avec un domaine déjà attribué sont également ignorés. Après l'installation de Puppeteer et Chrome, lancer :
+
+```sh
+npm run db:enrich-company-domains -- --limit=50
+```
+
+`COMPANY_DOMAIN_DELAY_MS` règle la pause entre les entreprises et `COMPANY_DOMAIN_MIN_SCORE` le seuil de confiance (défaut : 5). Le script complète les champs vides seulement et conserve la provenance de la recherche dans `Company.metadata.sources`.
+
+Pour importer des entreprises depuis PagesJaunes, `scripts/sync-pagesjaunes.mjs` applique le produit cartésien des mots-clés de recherche avec les 20 villes et les 20 départements les plus peuplés configurés dans le script, remplit les deux champs de recherche, visite les fiches des résultats et collecte les coordonnées professionnelles disponibles : site, numéros de téléphone, adresse, activités/mots-clés, description et horaires. Les informations propres à PagesJaunes sont conservées dans `Company.metadata.sources`; les téléphones, horaires, mots-clés et l'adresse postale sont également agrégés dans `Company.metadata`. Les champs déjà renseignés sur une entreprise sont préservés. Une exécution traite 50 recherches par défaut (1 880 combinaisons au total, jusqu'à 25 fiches par recherche) et reprend au prochain index via `.data/pagesjaunes-state.json` :
+
+```sh
+npm run db:sync-pagesjaunes
+```
+
+Utiliser `--all` pour traiter toutes les combinaisons restantes ou `--limit=N` pour régler la taille du lot. `PAGESJAUNES_DELAY_MS` et `PAGESJAUNES_DETAIL_DELAY_MS` règlent les pauses entre recherches et fiches. Si PagesJaunes présente un contrôle anti-automatisation, le script arrête le lot et conserve sa position de reprise.
+
+Lorsqu'une recherche est lancée, PKida filtre l'ensemble des entreprises stockées par nom, description, secteur, industrie et lieu, puis visite les sites des entreprises correspondantes qui ont un domaine, par groupes de quatre pour limiter la charge. Pour éviter une consommation excessive de crédits Brave, la recherche du domaine des entreprises qui n'en ont pas est limitée à quatre par lancement ; lancer auparavant `db:enrich-company-domains` pour renseigner progressivement ces domaines. Les offres sont confirmées par leurs données structurées `JobPosting` ou par le contenu de la page avant d'être conservées. Les pages hébergées sur les job boards et ATS connus sont exclues. Les posts LinkedIn publics continuent d'être recherchés séparément avec Brave. Titre, description, entreprise, salaire, lieu, contrat, dates et secteur restent non renseignés si la source ne les fournit pas. Pour les mots-clés, les mots non cités sont séparés (espaces, virgules ou retours à la ligne) ; mettre une expression composée entre guillemets pour la garder groupée, par exemple `node, React, "gestion de projet"`.
+
+L'API de l'Annuaire des Entreprises est un service de recherche textuelle et géographique, pas une exportation exhaustive de Sirene ; l'import l'interroge avec les termes configurés. Sortlist `/explore` est un catalogue de catégories de services : le script visite les pages de catégories, puis les profils d'agences qu'elles référencent.
+
+Les posts LinkedIn proviennent d'un index public et ne garantissent ni l'exhaustivité du flux d'une entreprise ni la vérification de l'identité de son auteur. L'accès à l'API LinkedIn pour les publications d'une organisation nécessite des permissions approuvées et un membre autorisé sur la page de cette organisation ; il ne permet pas de lire arbitrairement les flux de toutes les entreprises. PKida indique donc clairement les posts indexés et demande à l'utilisateur de vérifier le compte à la source.
+
+Après une première collecte, une recherche passe en état **Active** et devient éligible au déclencheur quotidien. L'utilisateur peut la mettre en pause ou la reprendre depuis sa page. Pour le planificateur externe, configurer `PKIDA_CRON_SECRET`, puis appeler `POST /api/cron/researches` avec `Authorization: Bearer <secret>` une fois par jour. La liste des offres dans PKida constitue la notification de l'utilisateur. L'envoi par e-mail n'est pas activé dans cette version.
 
 ## API de candidatures
 

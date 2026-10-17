@@ -11,6 +11,10 @@
     "check-types": "prisma generate && tsc --noEmit",
     "test:integration": "node --test tests/integration.mjs",
     "db:generate": "prisma generate",
+    "db:install-browser": "puppeteer browsers install chrome",
+    "db:sync-companies": "prisma generate && node --experimental-strip-types scripts/sync-companies.mjs",
+    "db:sync-pagesjaunes": "prisma generate && node --experimental-strip-types scripts/sync-pagesjaunes.mjs",
+    "db:enrich-company-domains": "prisma generate && node --experimental-strip-types scripts/enrich-company-domains.mjs",
     "db:migrate": "node scripts/database.mjs migrate",
     "db:studio": "prisma studio"
   },
@@ -23,7 +27,8 @@
     "@prisma/client": "^7.8.0",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "puppeteer": "^25.12.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
